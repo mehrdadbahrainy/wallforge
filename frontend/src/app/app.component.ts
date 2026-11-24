@@ -64,6 +64,8 @@ export class AppComponent implements OnInit {
         { headers: { 'X-WallForge-CSRF': this.csrf }, withCredentials: true }));
       this.session.set(user);
       this.loginPassword.set('');
+      // Antiforgery tokens are bound to authentication identity. Refresh after login.
+      await this.ensureCsrf();
       await this.refresh();
     } catch (e) {
       this.loginPassword.set('');

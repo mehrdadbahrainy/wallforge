@@ -92,3 +92,11 @@ jobs:
           sudo usermod -aG wallforge-admin wf-ci-admin
           sudo usermod --expiredate 1 wf-ci-admin
           printf '%s\n' "$password" | sudo -u wallforge-api /usr/bin/dotnet /tmp/wallforge-integration/WallForge.LinuxIntegration.dll wf-ci-admin admin account-disabled
+
+      - name: Authenticated HTTPS API integration on temporary Ubuntu runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo usermod --expiredate -1 wf-ci-admin
+          dotnet publish src/WallForge.Api/WallForge.Api.csproj -c Release -o /tmp/wallforge-api
+          bash tests/e2e/auth-session.sh

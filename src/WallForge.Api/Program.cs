@@ -53,6 +53,13 @@ builder.Services.AddAuthorization();
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddPolicy("csrf", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 30, Window = TimeSpan.FromMinutes(1),
+            QueueLimit = 0, AutoReplenishment = true
+        }));
     options.AddPolicy("login", context => RateLimitPartition.GetFixedWindowLimiter(
         context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
         _ => new FixedWindowRateLimiterOptions
@@ -87,7 +94,7 @@ app.MapGet("/api/auth/csrf", (HttpContext context, IAntiforgery antiforgery) =>
     var tokens = antiforgery.GetAndStoreTokens(context);
     context.Response.Headers.CacheControl = "no-store";
     return Results.Ok(new { token = tokens.RequestToken });
-}).RequireRateLimiting("login");
+}).RequireRateLimiting("csrf");
 
 app.MapPost("/api/auth/login", async (
     HttpContext context, LoginRequest input, IAntiforgery antiforgery,
