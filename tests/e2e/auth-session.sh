@@ -21,17 +21,21 @@ sudo mkdir -p /tmp/wallforge-ci-keys
 sudo chown wallforge-api:wallforge-api /tmp/wallforge-ci-keys
 sudo chmod 0700 /tmp/wallforge-ci-keys
 
-sudo -u wallforge-api env \
-  ASPNETCORE_ENVIRONMENT=Production \
-  ASPNETCORE_URLS=https://127.0.0.1:5443 \
-  ASPNETCORE_Kestrel__Certificates__Default__Path=/tmp/wallforge-ci.pfx \
-  ASPNETCORE_Kestrel__Certificates__Default__Password=wallforge-ci \
-  WALLFORGE_KEYS_DIR=/tmp/wallforge-ci-keys \
-  /usr/bin/dotnet /tmp/wallforge-api/WallForge.Api.dll >/tmp/wallforge-ci-api.log 2>&1 &
+(
+  cd /tmp/wallforge-api
+  exec sudo -u wallforge-api env \
+    ASPNETCORE_ENVIRONMENT=Production \
+    ASPNETCORE_URLS=https://127.0.0.1:5443 \
+    ASPNETCORE_Kestrel__Certificates__Default__Path=/tmp/wallforge-ci.pfx \
+    ASPNETCORE_Kestrel__Certificates__Default__Password=wallforge-ci \
+    WALLFORGE_KEYS_DIR=/tmp/wallforge-ci-keys \
+    /usr/bin/dotnet /tmp/wallforge-api/WallForge.Api.dll
+) >/tmp/wallforge-ci-api.log 2>&1 &
 api_pid=$!
 cleanup() {
   kill "$api_pid" 2>/dev/null || true
-  rm -f "$admin_jar" "$viewer_jar" /tmp/wallforge-ci.key /tmp/wallforge-ci.crt /tmp/wallforge-ci.pfx
+  rm -f "$admin_jar" "$viewer_jar" /tmp/wallforge-ci.key /tmp/wallforge-ci.crt
+  sudo rm -f /tmp/wallforge-ci.pfx
 }
 trap cleanup EXIT
 
@@ -75,7 +79,8 @@ echo "$admin_me" | grep -q '"role":"admin"'
 test "$(http_code -b "$admin_jar" "$base/api/audit")" = "200"
 test "$(http_code -b "$admin_jar" "$base/api/host/users")" = "200"
 test "$(http_code -b "$admin_jar" "$base/api/host/firewall")" = "200"
-echo "PASS admin HTTPS authentication and read-only host views"
+test "$(http_code -b "$admin_jar" -X POST "$base/api/host/firewall")" = "405"
+echo "PASS admin HTTPS authentication and read-only host views; mutations blocked"
 
 sudo gpasswd -d wf-ci-admin wallforge-admin >/dev/null
 test "$(http_code -b "$admin_jar" "$base/api/auth/me")" = "401"
@@ -96,5 +101,3 @@ test "$(http_code -b "$viewer_jar" -c "$viewer_jar" -X POST "$base/api/auth/logo
 test "$(http_code -b "$viewer_jar" "$base/api/auth/me")" = "401"
 echo "PASS viewer role, identity-bound CSRF refresh, and logout"
 
-test "$(http_code -b "$viewer_jar" -X POST "$base/api/host/firewall")" != "200"
-echo "PASS no firewall mutation route available in v0.1"
