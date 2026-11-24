@@ -97,7 +97,7 @@ app.MapPost("/api/auth/login", async (
     if (!LinuxUserNames.IsValid(input.UserName) || string.IsNullOrEmpty(input.Password) || input.Password.Length > 1024)
         return Results.BadRequest(new { error = "Invalid credentials." });
     var role = accounts.GetRole(input.UserName);
-    if (role is null || !pam.Authenticate(input.UserName, input.Password))
+    if (role is null || !await pam.AuthenticateAsync(input.UserName, input.Password, context.RequestAborted))
     {
         audit.Record("login-denied", "anonymous");
         return Results.Unauthorized();
