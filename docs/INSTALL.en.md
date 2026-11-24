@@ -6,7 +6,7 @@
 
 - Ubuntu 24.04 LTS or another explicitly tested Ubuntu release
 - .NET 10 SDK/runtime and Node.js 24, npm
-- `ufw`, `sudo`, `libpam0g` available
+- `ufw`, `sudo`, `libpam0g` available; `gcc` and `libpam0g-dev` required when building the helper
 - A local non-root Ubuntu user with a password and UID >= 1000
 - A **trusted HTTPS reverse proxy** on the same host, or run the API with a correctly configured HTTPS endpoint for local development
 
@@ -44,18 +44,23 @@ Install the PAM service used to authenticate a local Ubuntu username/password an
 sudo install -o root -g root -m 0644 ops/pam.d/wallforge /etc/pam.d/wallforge
 ```
 
-Create the dedicated **unprivileged API** identity and a tightly scoped sudoers rule for UFW status **only**:
+Build the minimal **native root-owned PAM verifier** and create the dedicated **unprivileged API** identity. The sudoers file permits exactly two fixed commands: the verifier with no arguments, and read-only UFW status:
 
 ```bash
 sudo useradd --system --home-dir /var/lib/wallforge --shell /usr/sbin/nologin wallforge-api
+sudo apt-get install -y gcc libpam0g-dev
+gcc -O2 -Wall -Wextra -Werror -fstack-protector-strong -D_FORTIFY_SOURCE=3 \\
+  -o /tmp/wallforge-pam-auth src/WallForge.PamHelper/wallforge-pam-auth.c -lpam
+sudo mkdir -p /usr/local/libexec
+sudo install -o root -g root -m 0755 /tmp/wallforge-pam-auth /usr/local/libexec/wallforge-pam-auth
 sudo install -o root -g root -m 0440 ops/sudoers.d/wallforge /etc/sudoers.d/wallforge
 sudo visudo -cf /etc/sudoers.d/wallforge
 ```
 
-The API never receives arbitrary shell/command arguments from clients. Its UFW inspection command is exactly:
+The API never receives arbitrary shell/command arguments from clients. Its PAM verifier is exactly `/usr/bin/sudo -n /usr/local/libexec/wallforge-pam-auth` and receives credentials through a length-prefixed private stdin protocol, never argv. Its UFW inspection command is exactly:
 `/usr/bin/sudo -n /usr/sbin/ufw status numbered`.
 
-> PAM authentication from a non-root application depends on the host PAM stack and must be verified using actual local Ubuntu accounts before calling this release ready. Do not weaken `/etc/shadow` permissions.
+> PAM authentication is delegated to a narrowly scoped, root-owned native verifier. The API remains unprivileged. PAM configuration must still be tested using actual local Ubuntu accounts before calling this release ready. Do not weaken `/etc/shadow` permissions.
 
 ## Run behind trusted HTTPS
 
@@ -79,7 +84,7 @@ sudo systemctl enable --now wallforge-api
 sudo journalctl -u wallforge-api -f
 ```
 
-The systemd unit creates `/var/lib/wallforge` and persists cookie protection keys under `/var/lib/wallforge/keys`. Only the API identity must have write access. The unit cannot enable `NoNewPrivileges` while using restricted sudo. This is a **v0.1 limitation requiring security review**; a dedicated host agent will replace the sudo inspection boundary when safe firewall writes are implemented.
+The systemd unit creates `/var/lib/wallforge` and persists cookie protection keys under `/var/lib/wallforge/keys`. Only the API identity must have write access. The unit cannot enable `NoNewPrivileges` while using restricted sudo for PAM and UFW status. This is a **v0.1 limitation requiring security review**; a dedicated host agent will replace the sudo inspection boundary when safe firewall writes are implemented.
 
 ## Verification (release blockers)
 
