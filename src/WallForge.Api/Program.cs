@@ -1,4 +1,7 @@
 using System.Security.Claims;
+using System.Net;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.DataProtection;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
@@ -7,6 +10,20 @@ using Microsoft.AspNetCore.RateLimiting;
 using WallForge.Api;
 
 var builder = WebApplication.CreateBuilder(args);
+var keyDirectory = builder.Configuration["WALLFORGE_KEYS_DIR"];
+if (!string.IsNullOrWhiteSpace(keyDirectory))
+{
+    Directory.CreateDirectory(keyDirectory);
+    builder.Services.AddDataProtection()
+        .SetApplicationName("WallForge")
+        .PersistKeysToFileSystem(new DirectoryInfo(keyDirectory));
+}
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownProxies.Add(IPAddress.Loopback);
+    options.KnownProxies.Add(IPAddress.IPv6Loopback);
+});
 builder.Services.AddSingleton<LocalAccountStore>();
 builder.Services.AddSingleton<PamAuthenticator>();
 builder.Services.AddSingleton<UfwInspector>();
@@ -45,6 +62,7 @@ builder.Services.AddRateLimiter(options =>
         }));
 });
 var app = builder.Build();
+app.UseForwardedHeaders();
 app.UseExceptionHandler(handler =>
 {
     handler.Run(async context =>
