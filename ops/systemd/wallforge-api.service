@@ -12,16 +12,16 @@ Environment=ASPNETCORE_URLS=http://127.0.0.1:5080
 Environment=ASPNETCORE_ENVIRONMENT=Production
 Restart=on-failure
 RestartSec=3
-NoNewPrivileges=true
+NoNewPrivileges=false
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=true
 ReadWritePaths=/var/lib/wallforge
 StateDirectory=wallforge
 StateDirectoryMode=0700
-CapabilityBoundingSet=
-AmbientCapabilities=
-RestrictSUIDSGID=false
+Environment=WALLFORGE_KEYS_DIR=/var/lib/wallforge/keys
+# Limited sudo for one fixed read-only command needs setuid; no-new-privileges cannot be enabled.
+# Do not give the service account any other sudo privileges.
 
 [Install]
 WantedBy=multi-user.target
