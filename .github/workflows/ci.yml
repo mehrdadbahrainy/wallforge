@@ -1,0 +1,36 @@
+name: wallforge-ci
+on:
+  push:
+    branches: [main, feature/v0.1.0-foundation]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  api:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Build API
+        run: dotnet build src/WallForge.Api/WallForge.Api.csproj -c Release -warnaserror
+      - name: Run safe, dependency-free smoke tests
+        run: dotnet run -c Release --project tests/WallForge.SmokeTests/WallForge.SmokeTests.csproj
+  angular:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm install --no-audit --no-fund
+      - name: Typecheck
+        working-directory: frontend
+        run: npm run typecheck
+      - name: Build Angular
+        working-directory: frontend
+        run: npm run build

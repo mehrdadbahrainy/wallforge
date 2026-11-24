@@ -1,0 +1,27 @@
+[Unit]
+Description=WallForge read-only API
+After=network.target
+
+[Service]
+Type=simple
+User=wallforge-api
+Group=wallforge-api
+WorkingDirectory=/opt/wallforge/api
+ExecStart=/usr/bin/dotnet /opt/wallforge/api/WallForge.Api.dll
+Environment=ASPNETCORE_URLS=http://127.0.0.1:5080
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/wallforge
+StateDirectory=wallforge
+StateDirectoryMode=0700
+CapabilityBoundingSet=
+AmbientCapabilities=
+RestrictSUIDSGID=false
+
+[Install]
+WantedBy=multi-user.target

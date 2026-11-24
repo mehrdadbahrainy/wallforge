@@ -1,0 +1,5 @@
+# WallForge PAM service — Ubuntu local account authentication.
+# Install as root-owned /etc/pam.d/wallforge (mode 0644).
+# The application additionally denies root and requires explicit group membership.
+@include common-auth
+@include common-account
