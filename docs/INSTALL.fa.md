@@ -4,7 +4,7 @@
 
 ## پیش‌نیازها
 
-اوبونتو، SDK نسخه 10 دات‌نت، Node.js نسخه 24، ابزارهای UFW و sudo و کتابخانه PAM.
+اوبونتو، SDK نسخه 10 دات‌نت، Node.js نسخه 24، ابزارهای UFW و sudo و کتابخانه PAM. برای ساخت Helper بومی PAM به gcc و libpam0g-dev نیاز داریم.
 
 ## ساخت نرم‌افزار
 
@@ -37,11 +37,16 @@ sudo install -o root -g root -m 0644 ops/pam.d/wallforge /etc/pam.d/wallforge
 
 ```bash
 sudo useradd --system --home-dir /var/lib/wallforge --shell /usr/sbin/nologin wallforge-api
+sudo apt-get install -y gcc libpam0g-dev
+gcc -O2 -Wall -Wextra -Werror -fstack-protector-strong -D_FORTIFY_SOURCE=3 \\
+  -o /tmp/wallforge-pam-auth src/WallForge.PamHelper/wallforge-pam-auth.c -lpam
+sudo mkdir -p /usr/local/libexec
+sudo install -o root -g root -m 0755 /tmp/wallforge-pam-auth /usr/local/libexec/wallforge-pam-auth
 sudo install -o root -g root -m 0440 ops/sudoers.d/wallforge /etc/sudoers.d/wallforge
 sudo visudo -cf /etc/sudoers.d/wallforge
 ```
 
-مجوز sudo فقط فرمان ثابت و فقط‌خواندنی `ufw status numbered` را پوشش می‌دهد. از تغییر مجوزهای `/etc/shadow` یا دادن دسترسی نامحدود sudo به سرویس خودداری کنید.
+مجوز sudo فقط دو فرمان مشخص را پوشش می‌دهد: Helper بومی احراز هویت PAM بدون آرگومان و فرمان ثابت و فقط‌خواندنی `ufw status numbered`. رمز عبور از طریق ورودی استاندارد به Helper ارسال می‌شود، نه آرگومان فرمان. از تغییر مجوزهای `/etc/shadow` یا دادن دسترسی نامحدود sudo به سرویس خودداری کنید.
 
 ## اجرای آزمایشی با HTTPS
 
