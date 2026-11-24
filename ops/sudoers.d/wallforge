@@ -1,5 +1,5 @@
 # WallForge: EXACT read-only commands for the unprivileged API service identity.
 # Both binaries must be root-owned and must not be writable by wallforge-api.
 # No glob/wildcards, shells, arbitrary commands, or user-controlled arguments.
-wallforge-api ALL=(root) NOPASSWD: /usr/local/libexec/wallforge-pam-auth
+wallforge-api ALL=(root) NOPASSWD: /usr/local/libexec/wallforge-pam-auth ""
 wallforge-api ALL=(root) NOPASSWD: /usr/sbin/ufw status numbered
