@@ -49,7 +49,7 @@ public sealed class UfwInspector
         if (header is null) return new(false, "unknown", [], "UFW output could not be parsed.");
         var status = header[7..].Trim().ToLowerInvariant();
         if (status is not ("active" or "inactive")) return new(false, "unknown", [], "Unrecognized UFW state.");
-        var rules = lines.Select(x => x.Trim()).Where(x => x.StartsWith('[', StringComparison.Ordinal) && x.Contains(']')).ToArray();
+        var rules = lines.Select(x => x.Trim()).Where(x => x.StartsWith("[", StringComparison.Ordinal) && x.Contains(']')).ToArray();
         return new(true, status, rules, null);
     }
 }
