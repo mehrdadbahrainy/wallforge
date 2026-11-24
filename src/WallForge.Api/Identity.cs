@@ -17,6 +17,9 @@ public static class CsrfGuard
 {
     public static async Task<bool> ValidAsync(HttpContext context, IAntiforgery antiforgery)
     {
+        // Unsafe authentication requests must never be evaluated over plain HTTP.
+        // TLS termination is permitted only through a previously configured trusted proxy.
+        if (!context.Request.IsHttps) return false;
         // Strict same-site cookies and explicit anti-forgery token are both mandatory.
         if (context.Request.Headers.Origin.Count > 0 &&
             !string.Equals(context.Request.Headers.Origin.ToString(),
