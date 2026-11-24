@@ -11,7 +11,7 @@ WallForge is an early-stage, open-source web application for **safe Ubuntu firew
 
 - **Frontend:** Angular + TypeScript
 - **API:** ASP.NET Core (unprivileged service)
-- **Host read boundary (v0.1):** unprivileged API invokes a single read-only, argument-exact `sudo -n /usr/sbin/ufw status numbered` operation; a dedicated privileged host agent is planned for safe writes later
+- **Host read boundary (v0.1):** unprivileged API invokes two fixed, argument-exact root operations: a tiny native PAM verifier and read-only `sudo -n /usr/sbin/ufw status numbered`; a dedicated privileged host agent is planned for safe writes later
 - **Firewall:** UFW initially; nftables backend planned after v1.0
 - **Authentication:** Linux PAM, with independent authorization via `wallforge-admin` and `wallforge-viewer` OS groups
 - **Deployment:** single Ubuntu host at first, trusted HTTPS management network only
@@ -37,7 +37,7 @@ These versions are **targets, not shipped features**. The complete acceptance cr
 ## Security priorities
 
 1. WallForge web/API services must run unprivileged and should be accessible only on trusted HTTPS networks.
-2. In v0.1, a restricted sudoers policy allows exactly one read-only UFW status command. A dedicated privileged host agent is required before any host mutation.
+2. In v0.1, a restricted sudoers policy allows only a native PAM verifier and one read-only UFW status command. A dedicated privileged host agent is required before any host mutation.
 3. Firewall writes must have a **host-level rollback mechanism independent of the browser session**; require explicit confirmation.
 4. Refuse unsafe modifications of root/system accounts or the last administrative login path.
 5. Treat container-published ports as potentially bypassing UFW filtering; show their effective exposure rather than claiming UFW covers them.
