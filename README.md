@@ -5,16 +5,16 @@
 WallForge is an early-stage, open-source web application for **safe Ubuntu firewall and local Linux access management**.
 
 > [!WARNING]
-> **Planning stage — no installable release yet.** WallForge is not audited or ready for production. Never expose an early build directly to the public internet.
+> **v0.1.0 development implementation is under review, NOT RELEASED.** API and Angular compile in GitHub Actions, but PAM and UFW require disposable Ubuntu integration testing and security review. Never expose an early build directly to the public internet.
 
 ## Architecture (planned)
 
 - **Frontend:** Angular + TypeScript
 - **API:** ASP.NET Core (unprivileged service)
-- **Privileged host agent:** isolated, minimal allowlisted operations; no arbitrary shell commands
+- **Host read boundary (v0.1):** unprivileged API invokes a single read-only, argument-exact `sudo -n /usr/sbin/ufw status numbered` operation; a dedicated privileged host agent is planned for safe writes later
 - **Firewall:** UFW initially; nftables backend planned after v1.0
 - **Authentication:** Linux PAM, with independent authorization via `wallforge-admin` and `wallforge-viewer` OS groups
-- **Deployment:** single Ubuntu host at first
+- **Deployment:** single Ubuntu host at first, trusted HTTPS management network only
 
 Local Linux accounts authenticate to WallForge through PAM; there is **no second password database**. PAM login does not by itself confer WallForge access. Root login is disabled by default, access is denied unless explicitly authorized, and privileges must be checked again for sensitive requests.
 
@@ -36,8 +36,8 @@ These versions are **targets, not shipped features**. The complete acceptance cr
 
 ## Security priorities
 
-1. WallForge web/API services must run unprivileged and should be accessible only on trusted networks.
-2. Privileged agent must accept only specifically validated operations through a restricted local transport.
+1. WallForge web/API services must run unprivileged and should be accessible only on trusted HTTPS networks.
+2. In v0.1, a restricted sudoers policy allows exactly one read-only UFW status command. A dedicated privileged host agent is required before any host mutation.
 3. Firewall writes must have a **host-level rollback mechanism independent of the browser session**; require explicit confirmation.
 4. Refuse unsafe modifications of root/system accounts or the last administrative login path.
 5. Treat container-published ports as potentially bypassing UFW filtering; show their effective exposure rather than claiming UFW covers them.
@@ -64,3 +64,24 @@ We follow SemVer and keep [CHANGELOG.md](CHANGELOG.md) using **Added / Changed /
 - قابلیت‌های مدیریت کاربران، کلیدهای SSH و دسترسی sudo در نسخه‌های بعدی
 
 برای مشاهده امکانات دقیق هر نسخه، فایل [نقشه راه](docs/ROADMAP.md) را ببینید.
+
+
+## v0.1.0 development checkout
+
+The source implementation is available on [feature/v0.1.0-foundation](https://github.com/mehrdadbahrainy/wallforge/tree/feature/v0.1.0-foundation) and tracked in [PR #2](https://github.com/mehrdadbahrainy/wallforge/pull/2). **Do not use it on a public production server.**
+
+- [English installation and Ubuntu verification](docs/INSTALL.en.md)
+- [راهنمای نصب و تست فارسی](docs/INSTALL.fa.md)
+- [Security model and known limitations](docs/SECURITY.md)
+- [HTTP API](docs/API.md)
+- [Contributing](CONTRIBUTING.md)
+
+Quick safe build:
+
+```bash
+dotnet build src/WallForge.Api/WallForge.Api.csproj -c Release
+dotnet run -c Release --project tests/WallForge.SmokeTests/WallForge.SmokeTests.csproj
+cd frontend && npm install && npm run typecheck && npm run build
+```
+
+**Current 0.1 read-only capabilities:** PAM authentication, local OS-group authorization, view UFW status/numbered rules, view local users/groups, view recent activity as admin. No firewall/users mutations exist. The real Ubuntu integration and release checklist are intentionally pending.
