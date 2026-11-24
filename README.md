@@ -5,7 +5,7 @@
 WallForge is an early-stage, open-source web application for **safe Ubuntu firewall and local Linux access management**.
 
 > [!WARNING]
-> **v0.1.0 development implementation is under review, NOT RELEASED.** API and Angular compile in GitHub Actions, but PAM and UFW require disposable Ubuntu integration testing and security review. Never expose an early build directly to the public internet.
+> **v0.1.0 development implementation is under review, NOT RELEASED.** GitHub Actions builds Angular and .NET and passes Ubuntu 24.04 PAM/UFW and authenticated HTTPS API integration tests, but manual installation, browser testing and a security review remain mandatory. Never expose an early build directly to the public internet.
 
 ## Architecture (planned)
 
@@ -83,5 +83,7 @@ dotnet build src/WallForge.Api/WallForge.Api.csproj -c Release
 dotnet run -c Release --project tests/WallForge.SmokeTests/WallForge.SmokeTests.csproj
 cd frontend && npm install && npm run typecheck && npm run build
 ```
+
+**Verified CI:** [Ubuntu PAM/UFW and authenticated HTTPS API tests](https://github.com/mehrdadbahrainy/wallforge/actions/runs/45483913728) pass on a disposable Ubuntu 24.04 runner. Manual install and production security validation remain open.
 
 **Current 0.1 read-only capabilities:** PAM authentication, local OS-group authorization, view UFW status/numbered rules, view local users/groups, view recent activity as admin. No firewall/users mutations exist. The real Ubuntu integration and release checklist are intentionally pending.
