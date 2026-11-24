@@ -1,4 +1,7 @@
-using System.Runtime.InteropServices;
+using System.Buffers.Binary;
+using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Antiforgery;
 
@@ -25,91 +28,75 @@ public static class CsrfGuard
 }
 
 /// <summary>
-/// Native PAM consumer. The operating-system PAM stack decides whether a password
-/// and the account are valid. Only a single hidden password prompt is supported.
-/// Must be validated on real Ubuntu; this code does not store Linux passwords.
+/// An unprivileged .NET client for one fixed, argument-exact privileged PAM helper.
+/// Secrets travel over the child's standard input, never command-line arguments.
 /// </summary>
 public sealed class PamAuthenticator
 {
-    private const int PamSuccess = 0;
-    private const int PamPromptEchoOff = 1;
-    private const int PamSilent = 0x8000;
+    private const int MaximumPasswordBytes = 1024;
 
-    [StructLayout(LayoutKind.Sequential)]
-    private struct PamMessage { public int Style; public IntPtr Msg; }
-    [StructLayout(LayoutKind.Sequential)]
-    private struct PamResponse { public IntPtr Resp; public int RetCode; }
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    private delegate int ConversationFn(int messageCount, IntPtr messages, out IntPtr responses, IntPtr userData);
-    [StructLayout(LayoutKind.Sequential)]
-    private struct Conversation { public ConversationFn Fn; public IntPtr UserData; }
-
-    [DllImport("libpam.so.0", EntryPoint = "pam_start", CallingConvention = CallingConvention.Cdecl)]
-    private static extern int PamStart(string service, string user, ref Conversation conversation, out IntPtr handle);
-    [DllImport("libpam.so.0", EntryPoint = "pam_authenticate", CallingConvention = CallingConvention.Cdecl)]
-    private static extern int PamAuthenticate(IntPtr handle, int flags);
-    [DllImport("libpam.so.0", EntryPoint = "pam_acct_mgmt", CallingConvention = CallingConvention.Cdecl)]
-    private static extern int PamAccount(IntPtr handle, int flags);
-    [DllImport("libpam.so.0", EntryPoint = "pam_end", CallingConvention = CallingConvention.Cdecl)]
-    private static extern int PamEnd(IntPtr handle, int status);
-    [DllImport("libc", EntryPoint = "calloc", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr Calloc(nuint count, nuint size);
-    [DllImport("libc", EntryPoint = "strdup", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IntPtr StrDup([MarshalAs(UnmanagedType.LPUTF8Str)] string value);
-    [DllImport("libc", EntryPoint = "free", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void Free(IntPtr pointer);
-
-    public bool Authenticate(string user, string password)
+    public async Task<bool> AuthenticateAsync(string username, string password, CancellationToken cancellationToken)
     {
-        if (!OperatingSystem.IsLinux() || !LinuxUserNames.IsValid(user) || password.Contains('\0')) return false;
-        ConversationFn callback = (int count, IntPtr msgPtrs, out IntPtr responsePtr, IntPtr _) =>
-        {
-            responsePtr = IntPtr.Zero;
-            if (count <= 0 || count > 8) return 19; // PAM_CONV_ERR
-            var size = Marshal.SizeOf<PamResponse>();
-            var buffer = Calloc((nuint)count, (nuint)size);
-            if (buffer == IntPtr.Zero) return 5; // PAM_BUF_ERR
-            for (var i = 0; i < count; i++)
-            {
-                var messageAddress = Marshal.ReadIntPtr(msgPtrs, i * IntPtr.Size);
-                if (messageAddress == IntPtr.Zero) { Cleanup(buffer, i, size); return 19; }
-                var msg = Marshal.PtrToStructure<PamMessage>(messageAddress);
-                if (msg.Style != PamPromptEchoOff) { Cleanup(buffer, i, size); return 19; }
-                var pw = StrDup(password);
-                if (pw == IntPtr.Zero) { Cleanup(buffer, i, size); return 5; }
-                Marshal.StructureToPtr(new PamResponse { Resp = pw, RetCode = 0 }, IntPtr.Add(buffer, i * size), false);
-            }
-            responsePtr = buffer;
-            return PamSuccess;
-        };
+        if (!OperatingSystem.IsLinux() || !LinuxUserNames.IsValid(username) ||
+            string.IsNullOrEmpty(password) || password.Contains('\0')) return false;
 
-        var conv = new Conversation { Fn = callback, UserData = IntPtr.Zero };
-        IntPtr pam = IntPtr.Zero;
-        var status = 19;
+        var nameBytes = Encoding.UTF8.GetBytes(username);
+        var passwordBytes = Encoding.UTF8.GetBytes(password);
+        if (nameBytes.Length > 32 || passwordBytes.Length > MaximumPasswordBytes) return false;
+
+        byte[]? payload = null;
         try
         {
-            status = PamStart("wallforge", user, ref conv, out pam);
-            if (status != PamSuccess || pam == IntPtr.Zero) return false;
-            status = PamAuthenticate(pam, PamSilent);
-            if (status != PamSuccess) return false;
-            status = PamAccount(pam, PamSilent);
-            return status == PamSuccess;
+            payload = new byte[4 + nameBytes.Length + passwordBytes.Length];
+            BinaryPrimitives.WriteUInt16BigEndian(payload.AsSpan(0, 2), (ushort)nameBytes.Length);
+            BinaryPrimitives.WriteUInt16BigEndian(payload.AsSpan(2, 2), (ushort)passwordBytes.Length);
+            nameBytes.CopyTo(payload.AsSpan(4));
+            passwordBytes.CopyTo(payload.AsSpan(4 + nameBytes.Length));
+
+            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeout.CancelAfter(TimeSpan.FromSeconds(10));
+            using var process = new Process
+            {
+                StartInfo = new ProcessStartInfo("/usr/bin/sudo")
+                {
+                    UseShellExecute = false,
+                    RedirectStandardInput = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = false,
+                    CreateNoWindow = true
+                }
+            };
+            process.StartInfo.ArgumentList.Add("-n");
+            process.StartInfo.ArgumentList.Add("/usr/local/libexec/wallforge-pam-auth");
+            process.StartInfo.Environment["LC_ALL"] = "C";
+            if (!process.Start()) return false;
+            try
+            {
+                await process.StandardInput.BaseStream.WriteAsync(payload, timeout.Token);
+                await process.StandardInput.BaseStream.FlushAsync(timeout.Token);
+                process.StandardInput.Close();
+                var answer = new byte[1];
+                var count = await process.StandardOutput.BaseStream.ReadAsync(answer, timeout.Token);
+                await process.WaitForExitAsync(timeout.Token);
+                return count == 1 && answer[0] == (byte)'1' && process.ExitCode == 0;
+            }
+            finally
+            {
+                if (!process.HasExited)
+                {
+                    try { process.Kill(entireProcessTree: true); }
+                    catch (InvalidOperationException) { }
+                }
+            }
+        }
+        catch (Exception ex) when (ex is IOException or System.ComponentModel.Win32Exception or InvalidOperationException or OperationCanceledException)
+        {
+            return false; // Fail closed when privilege broker is unavailable.
         }
         finally
         {
-            if (pam != IntPtr.Zero) PamEnd(pam, status);
-            GC.KeepAlive(callback);
+            CryptographicOperations.ZeroMemory(passwordBytes);
+            if (payload is not null) CryptographicOperations.ZeroMemory(payload);
         }
-    }
-
-    private static void Cleanup(IntPtr buffer, int initialized, int stride)
-    {
-        for (var index = 0; index < initialized; index++)
-        {
-            var entry = Marshal.PtrToStructure<PamResponse>(IntPtr.Add(buffer, index * stride));
-            if (entry.Resp != IntPtr.Zero) Free(entry.Resp);
-        }
-        Free(buffer);
     }
 }
