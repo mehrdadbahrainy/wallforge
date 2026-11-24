@@ -34,3 +34,40 @@ jobs:
       - name: Build Angular
         working-directory: frontend
         run: npm run build
+
+  linux-integration:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Install minimal Ubuntu host dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ufw libpam0g sudo
+          sudo groupadd --system --force wallforge-admin
+          sudo groupadd --system --force wallforge-viewer
+          sudo useradd --system --home-dir /var/lib/wallforge --shell /usr/sbin/nologin wallforge-api
+          sudo useradd -m -u 1501 -s /bin/bash -G wallforge-admin wf-ci-admin
+          sudo useradd -m -u 1502 -s /bin/bash -G wallforge-viewer wf-ci-viewer
+          sudo install -o root -g root -m 0644 ops/pam.d/wallforge /etc/pam.d/wallforge
+          sudo install -o root -g root -m 0440 ops/sudoers.d/wallforge /etc/sudoers.d/wallforge
+          sudo visudo -cf /etc/sudoers.d/wallforge
+      - name: Build integration harness
+        run: dotnet publish tests/WallForge.LinuxIntegration/WallForge.LinuxIntegration.csproj -c Release -o /tmp/wallforge-integration
+      - name: Test PAM, local role restrictions, and read-only UFW on disposable Ubuntu runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          password="$(openssl rand -hex 18)"
+          printf '%s:%s\n' wf-ci-admin "$password" | sudo chpasswd
+          printf '%s:%s\n' wf-ci-viewer "$password" | sudo chpasswd
+          printf '%s\n' "$password" | sudo -u wallforge-api /usr/bin/dotnet /tmp/wallforge-integration/WallForge.LinuxIntegration.dll wf-ci-admin admin read-ufw
+          printf '%s\n' "$password" | sudo -u wallforge-api /usr/bin/dotnet /tmp/wallforge-integration/WallForge.LinuxIntegration.dll wf-ci-viewer viewer valid
+          printf '%s\n' "definitely-wrong-password" | sudo -u wallforge-api /usr/bin/dotnet /tmp/wallforge-integration/WallForge.LinuxIntegration.dll wf-ci-admin admin invalid-password
+          sudo gpasswd -d wf-ci-admin wallforge-admin
+          printf '%s\n' "$password" | sudo -u wallforge-api /usr/bin/dotnet /tmp/wallforge-integration/WallForge.LinuxIntegration.dll wf-ci-admin none valid
+          sudo usermod -aG wallforge-admin wf-ci-admin
+          sudo usermod --expiredate 1 wf-ci-admin
+          printf '%s\n' "$password" | sudo -u wallforge-api /usr/bin/dotnet /tmp/wallforge-integration/WallForge.LinuxIntegration.dll wf-ci-admin admin account-disabled
