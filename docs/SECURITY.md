@@ -5,10 +5,10 @@
 ## Trust boundaries
 
 1. Angular web UI: untrusted browser. No privileged direct operations. Never trust client role flags.
-2. ASP.NET Core API: dedicated unprivileged Linux identity `wallforge-api`. Authenticates with PAM via `libpam`. Only emits HTTP-only session cookies (no JWT/localStorage credentials).
-3. PAM service `/etc/pam.d/wallforge`: authenticates against host configuration. Only one hidden password prompt is implemented in this phase. PAM account-management checks are made after successful password verification.
+2. ASP.NET Core API: dedicated unprivileged Linux identity `wallforge-api`. Calls a narrowly scoped native PAM verifier over a fixed, argument-exact sudo rule. Only emits HTTP-only session cookies (no JWT/localStorage credentials).
+3. Native root-owned verifier `/usr/local/libexec/wallforge-pam-auth` uses `libpam` and the PAM service `/etc/pam.d/wallforge`. Credentials are length-prefixed on stdin (not shell args). Only one hidden password prompt is implemented in this phase. PAM account-management checks are made after successful password verification.
 4. Account and role inventory: only `/etc/passwd` and `/etc/group` local entries (not LDAP/NSS beyond those files). Users must have UID >= 1000 and be explicitly in `wallforge-admin` or `wallforge-viewer`; root is denied.
-5. UFW inspector: one fixed, no-shell subprocess `sudo -n /usr/sbin/ufw status numbered`, controlled by exact argument-matched sudoers policy. The role cannot run any other sudo command. The command accepts no browser-provided arguments.
+5. UFW inspector: another fixed, no-shell subprocess `sudo -n /usr/sbin/ufw status numbered`, controlled by exact argument-matched sudoers policy. The role cannot run any other sudo command. The command accepts no browser-provided arguments.
 6. Journald: receives structured audit event names/actors, not passwords. Bounded UI audit buffer is ephemeral.
 
 ## Authentication/session invariants
@@ -24,10 +24,10 @@
 
 ## Threats and remaining risks
 
-- The restricted sudoers boundary still depends on setuid. As a consequence, `NoNewPrivileges` cannot be enabled on the API service. Revisit this as part of the dedicated privileged agent design. Never grant a wildcard sudoers command.
+- The two command-exact sudoers boundaries (PAM verifier and UFW read) still depend on setuid. As a consequence, `NoNewPrivileges` cannot be enabled on the API service. Revisit this as part of the dedicated privileged agent design. Never grant a wildcard sudoers command.
 - User account state after a successful login is not re-authenticated on every request. Group revocation is immediate; password-lock changes require further integration tests and may not terminate an existing session until expiry.
 - Default PAM configurations vary. MFA/multi-prompt PAM is not implemented; unsupported challenges must fail closed.
-- The PAM native interop marshals request secrets through managed memory. Passwords are never persisted or logged. Memory hygiene and PAM behavior require further review.
+- The API receives a managed-string password, encodes it to a buffer for the PAM helper and zeros its byte buffer after use. The helper clears the password buffer. Managed request strings cannot be reliably erased from runtime memory. Passwords are never persisted or logged. Memory hygiene and PAM behavior require further review.
 - Local `/etc/passwd`/`/etc/group` inventory omits LDAP accounts and may omit other NSS-resolved identities.
 - UFW rules are observations, not an assertion that Docker-published ports are filtered.
 - In-memory audit UI resets on restart. Systemd/journald retention must be configured separately.
