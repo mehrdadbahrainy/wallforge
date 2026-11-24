@@ -25,7 +25,7 @@ This project follows [Semantic Versioning](https://semver.org/) and a versioned 
 - None.
 
 ### Security
-- Implemented initial PAM authentication, role revocation checks, HTTPS-only session cookies and antiforgery protection in source. **PAM/host behavior remains unverified on a real Ubuntu VM.** Safe Apply/host-side rollback remains planned for v0.2.0.
+- Reworked PAM authentication to use a narrowly scoped, root-owned native verifier (after direct non-root PAM authentication failed on Ubuntu CI). Implemented role revocation checks, HTTPS-only session cookies and antiforgery protection in source. **PAM/host behavior remains unverified on a real Ubuntu VM.** Safe Apply/host-side rollback remains planned for v0.2.0.
 
 ### Breaking
 - None.
