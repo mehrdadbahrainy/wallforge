@@ -30,6 +30,7 @@ jobs:
             sleep 1
           done
           grep -q '"status":"ok"' /tmp/wf-health.json
+          test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:5098/api/auth/csrf)" = "403"
           test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:5098/api/host/users)" = "401"
           test "$(curl -sS -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:5098/api/auth/login -H 'Content-Type: application/json' --data '{"userName":"root","password":"x"}')" = "400"
   angular:
