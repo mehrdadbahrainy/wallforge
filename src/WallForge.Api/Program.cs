@@ -83,6 +83,7 @@ app.MapGet("/api/health", () => Results.Ok(new { status = "ok", version = "0.1.0
 
 app.MapGet("/api/auth/csrf", (HttpContext context, IAntiforgery antiforgery) =>
 {
+    if (!context.Request.IsHttps) return Results.StatusCode(StatusCodes.Status403Forbidden);
     var tokens = antiforgery.GetAndStoreTokens(context);
     context.Response.Headers.CacheControl = "no-store";
     return Results.Ok(new { token = tokens.RequestToken });
