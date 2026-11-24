@@ -121,6 +121,6 @@ end:
     if (handle) (void)pam_end(handle, pam_status);
     clear_sensitive(password, sizeof(password));
     clear_sensitive(username, sizeof(username));
-    (void)write(STDOUT_FILENO, &result, 1);
-    return 0; /* authentication denial is not an executable error */
+    ssize_t written = write(STDOUT_FILENO, &result, 1);
+    return written == 1 ? 0 : 1; /* authentication denial is not an executable error */
 }
