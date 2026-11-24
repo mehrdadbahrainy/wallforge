@@ -18,6 +18,20 @@ jobs:
         run: dotnet build src/WallForge.Api/WallForge.Api.csproj -c Release -warnaserror
       - name: Run safe, dependency-free smoke tests
         run: dotnet run -c Release --project tests/WallForge.SmokeTests/WallForge.SmokeTests.csproj
+      - name: Smoke-test HTTP routing and auth denial
+        shell: bash
+        run: |
+          set -euo pipefail
+          ASPNETCORE_URLS=http://127.0.0.1:5098 dotnet run --no-launch-profile --no-build -c Release --project src/WallForge.Api/WallForge.Api.csproj &
+          pid=$!
+          trap 'kill "$pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:5098/api/health > /tmp/wf-health.json; then break; fi
+            sleep 1
+          done
+          grep -q '"status":"ok"' /tmp/wf-health.json
+          test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:5098/api/host/users)" = "401"
+          test "$(curl -sS -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:5098/api/auth/login -H 'Content-Type: application/json' --data '{"userName":"root","password":"x"}')" = "400"
   angular:
     runs-on: ubuntu-24.04
     steps:
