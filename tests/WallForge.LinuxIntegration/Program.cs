@@ -17,11 +17,11 @@ if (!accounts.GetInventory().Users.Any(x => x.UserName == user))
 var auth = new PamAuthenticator();
 if (mode == "valid" || mode == "read-ufw")
 {
-    if (!auth.Authenticate(user, password)) throw new Exception("PAM rejected valid local Ubuntu credentials");
+    if (!await auth.AuthenticateAsync(user, password, CancellationToken.None)) throw new Exception("PAM rejected valid local Ubuntu credentials");
 }
 else if (mode == "invalid-password" || mode == "account-disabled")
 {
-    if (auth.Authenticate(user, password)) throw new Exception("PAM accepted an invalid/disabled account");
+    if (await auth.AuthenticateAsync(user, password, CancellationToken.None)) throw new Exception("PAM accepted an invalid/disabled account");
 }
 else throw new ArgumentException("Unsupported test mode");
 
