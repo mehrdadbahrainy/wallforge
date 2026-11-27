@@ -87,3 +87,7 @@ cd frontend && npm install && npm run typecheck && npm run build
 **Verified CI:** [Ubuntu PAM/UFW and authenticated HTTPS API tests](https://github.com/mehrdadbahrainy/wallforge/actions/runs/45483913728) pass on a disposable Ubuntu 24.04 runner. Manual install and production security validation remain open.
 
 **Current 0.1 read-only capabilities:** PAM authentication, local OS-group authorization, view UFW status/numbered rules, view local users/groups, view recent activity as admin. No firewall/users mutations exist. The real Ubuntu integration and release checklist are intentionally pending.
+
+## v0.1.0 local validation and review candidate
+
+Local validation evidence and release blockers: [test report](docs/TEST_REPORT_v0.1.0.md), [resolved/pending issues](docs/ISSUES_v0.1.0.md), [release checklist](docs/RELEASE_CHECKLIST_v0.1.0.md), [CI status](docs/CI_STATUS_v0.1.0.md), and [unpublished candidate notes](docs/RELEASE_NOTES_v0.1.0.md). The approved Forge Shield Emblem asset is unavailable; placeholders remain until the original asset is supplied. Clean Docker preview installation passed; real Ubuntu VM installation, host verification and independent review remain required. **Release readiness: NOT READY.**

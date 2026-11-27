@@ -1,0 +1,38 @@
+# Successful CI test excerpts
+
+Run: https://github.com/mehrdadbahrainy/wallforge/actions/runs/45992322959
+Revision: 8a454a41d1dea1def9a441a43912022002f7206b
+
+linux-integration
+2026-11-27T11:41:35.8197074Z PASS read-only UFW status: inactive
+2026-11-27T11:41:35.8197472Z PASS Linux integration: read-ufw / admin
+2026-11-27T11:41:35.8998505Z PASS Linux integration: valid / viewer
+2026-11-27T11:41:37.9339994Z PASS Linux integration: invalid-password / admin
+2026-11-27T11:41:38.0248893Z PASS Linux integration: valid / none
+2026-11-27T11:41:38.1228126Z PASS Linux integration: account-disabled / admin
+2026-11-27T11:41:42.5562009Z PASS unknown API routes return 404
+2026-11-27T11:41:42.5562340Z PASS anonymous endpoints require session and CSRF
+2026-11-27T11:41:42.8258743Z PASS sensitive responses are not cached and pre-login CSRF is rejected
+2026-11-27T11:41:42.8259446Z PASS admin HTTPS authentication and read-only host views; mutations blocked
+2026-11-27T11:41:42.8537489Z PASS mid-session group revocation
+2026-11-27T11:41:42.9611857Z PASS viewer role, identity-bound CSRF refresh, and logout
+2026-11-27T11:41:43.1358328Z PASS unexpired protected ticket returns 200
+2026-11-27T11:41:43.1377615Z PASS expired protected ticket returns 401
+2026-11-27T11:41:43.1874836Z PASS unavailable UFW fails closed with a safe error
+
+angular
+2026-11-27T11:40:10.8013737Z PASS failed logout (0) preserves session and reports failure
+2026-11-27T11:40:10.8022347Z PASS failed logout (400) preserves session and reports failure
+2026-11-27T11:40:10.8042294Z PASS failed logout (500) preserves session and reports failure
+2026-11-27T11:40:10.8049938Z PASS successful logout clears all sensitive view state
+2026-11-27T11:40:10.8051521Z PASS expired logout clears local session
+2026-11-27T11:40:10.8052849Z PASS 401 refresh clears stale host data and activity
+2026-11-27T11:40:10.8054306Z PASS login obtains a fresh token after session expiration
+2026-11-27T11:40:10.8055496Z 7 passed; 0 failed
+2026-11-27T11:40:15.2915848Z Application bundle generation complete. [2.505 seconds] - 2026-11-27T11:40:15.289Z
+
+api
+2026-11-27T11:40:08.5684056Z Build succeeded.
+2026-11-27T11:40:08.5684533Z     0 Warning(s)
+2026-11-27T11:40:08.5684869Z     0 Error(s)
+2026-11-27T11:40:10.7353811Z 17 WallForge smoke tests passed.
