@@ -1,6 +1,6 @@
 {
   "name": "wallforge-web",
-  "version": "0.1.0-dev",
+  "version": "0.1.0-rc.1",
   "private": true,
   "scripts": {
     "test": "node component-state.test.mjs",
@@ -23,5 +23,7 @@
     "@angular/compiler-cli": "^22.3.0",
     "typescript": "~6.0.2"
   },
-  "engines": { "node": "^22.22.3 || ^24.15.0 || >=26.0.0" }
+  "engines": {
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+  }
 }

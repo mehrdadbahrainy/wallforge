@@ -93,7 +93,7 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/api/health", () => Results.Ok(new { status = "ok", version = "0.1.0-dev" }));
+app.MapGet("/api/health", () => Results.Ok(new { status = "ok", version = "0.1.0-rc.1" }));
 
 app.MapGet("/api/auth/csrf", (HttpContext context, IAntiforgery antiforgery) =>
 {

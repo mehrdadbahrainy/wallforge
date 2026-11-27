@@ -1,5 +1,5 @@
 <div class="app-shell">
-  <header class="topbar"><div class="brand"><div class="brand-mark">◆</div><div><strong>WallForge</strong><small>Safe. Simple. Open.</small></div></div>
+  <header class="topbar"><div class="brand"><img class="brand-logo" src="/brand/wallforge-horizontal.png" alt="WallForge" width="164" height="64"><small>Safe. Simple. Open.</small></div>
   @if (session(); as user) {
     <div class="account"><span class="role">{{ user.role }}</span><span>{{ user.userName }}</span>
       <button type="button" class="button ghost" (click)="logout()">Sign out</button></div>
@@ -9,7 +9,7 @@
   @else if (!session()) {
     <main class="center">
       <form class="login" (ngSubmit)="login()">
-        <div class="shield">◈</div><h1>Secure sign in</h1>
+        <img class="login-logo" src="/brand/wallforge-horizontal.png" alt="WallForge" width="1330" height="520"><h1>Secure sign in</h1>
         <p class="muted">Use your Ubuntu account. WallForge access requires an authorized Linux group.</p>
         <label for="loginName">Ubuntu username</label>
         <input id="loginName" name="username" autocomplete="username" required [ngModel]="loginName()" (ngModelChange)="loginName.set($event)">
@@ -29,7 +29,7 @@
         @if (session()?.role === 'admin') {
           <button aria-label="Activity" [attr.aria-current]="currentView()==='activity' ? 'page' : null" [class.selected]="currentView()==='activity'" (click)="go('activity')">☷ <span>Activity</span></button>
         }
-        <p class="nav-note">v0.1.0 — read-only</p>
+        <p class="nav-note">v0.1.0-rc.1 — read-only</p>
       </nav>
       <main class="content">
         <div class="page-heading"><div><span class="eyebrow">LOCAL UBUNTU HOST</span>

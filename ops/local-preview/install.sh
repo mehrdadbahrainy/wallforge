@@ -15,10 +15,14 @@ chmod 0755 /opt/wallforge/api/WallForge.Api
 groupadd --system --force wallforge-admin
 groupadd --system --force wallforge-viewer
 id wallforge-api >/dev/null 2>&1 || useradd --system --user-group --home-dir /var/lib/wallforge --shell /usr/sbin/nologin wallforge-api
-id wfadmin >/dev/null 2>&1 || useradd -m -s /bin/bash wfadmin
+if ! id wfadmin >/dev/null 2>&1; then
+  useradd -m -s /bin/bash wfadmin
+  echo 'Set a unique throwaway password for the new wfadmin account.'
+  passwd wfadmin
+else
+  echo 'Existing wfadmin account and password preserved.'
+fi
 usermod -aG wallforge-admin wfadmin
-echo 'Set a unique throwaway password for wfadmin.'
-passwd wfadmin
 install -o root -g root -m 0755 wallforge-pam-auth /usr/local/libexec/wallforge-pam-auth
 install -o root -g root -m 0644 pam-wallforge /etc/pam.d/wallforge
 install -o root -g root -m 0440 sudoers-wallforge /etc/sudoers.d/wallforge

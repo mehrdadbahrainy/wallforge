@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
-# Disposable GitHub Ubuntu runner only: replaces the executable with a harmless hang fixture.
+# Disposable GitHub Ubuntu runner or explicitly identified Docker lab only: replaces the executable with a harmless hang fixture.
 set -euo pipefail
-[[ "${GITHUB_ACTIONS:-}" == true ]] || { echo 'Only the disposable GitHub runner is supported.'; exit 1; }
+[[ "${GITHUB_ACTIONS:-}" == true || ( -f /.dockerenv && "${WALLFORGE_DISPOSABLE_LAB:-}" == 1 ) ]] || { echo 'Use only a disposable GitHub runner or explicitly identified Docker lab.'; exit 1; }
+harness=(/usr/bin/dotnet /tmp/wallforge-integration/WallForge.LinuxIntegration.dll)
+if [[ -f /.dockerenv && -n "${WF_INTEGRATION_EXECUTABLE:-}" ]]; then
+  harness=("$WF_INTEGRATION_EXECUTABLE")
+fi
 backup="$(mktemp)"
 sudo cp /usr/sbin/ufw "$backup"
 cleanup() {
@@ -18,9 +22,9 @@ trap '' TERM
 sleep 60
 FIXTURE
 sudo chmod 0755 /usr/sbin/ufw
-sudo -u wallforge-api /usr/bin/dotnet /tmp/wallforge-integration/WallForge.LinuxIntegration.dll --ufw-timeout
+sudo -u wallforge-api "${harness[@]}" --ufw-timeout
 sudo rm -f /tmp/wallforge-hanging-ufw.pid
-sudo -u wallforge-api /usr/bin/dotnet /tmp/wallforge-integration/WallForge.LinuxIntegration.dll --ufw-cancel
+sudo -u wallforge-api "${harness[@]}" --ufw-cancel
 # This command must be denied by sudoers; it must never be executed as root.
 if sudo -u wallforge-api sudo -n /usr/bin/timeout 6s /usr/bin/id >/dev/null 2>&1; then
   echo 'FAIL arbitrary timeout command was permitted'; exit 1
