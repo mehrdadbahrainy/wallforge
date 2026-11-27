@@ -29,8 +29,10 @@ This project follows [Semantic Versioning](https://semver.org/) and a versioned 
 - Correct shell continuation in both Ubuntu installation guides.
 
 ### Security
+- Bound privileged UFW reads with an argument-exact root-owned timeout; hang/cancellation/argument-denial regressions added. Update API and sudoers together.
+- Ensure rejected UTF8 password buffers reach cleanup; explicitly disable service/preview core dumps and use private umask and journal routing. Live systemd/durable-journal validation remains blocked on an approved VM.
 - All API responses use `Cache-Control: no-store`; added cookie expiration, CSRF and frontend session regression tests.
-- Reworked PAM authentication to use a narrowly scoped, root-owned native verifier (after direct non-root PAM authentication failed on Ubuntu CI). Implemented role revocation checks, HTTPS-only session cookies and antiforgery protection in source. **PAM/UFW and HTTPS session behavior passed on a GitHub-hosted Ubuntu 24.04 runner.** Independent security review, real browser E2E and manual installation/upgrade verification are still pending. Safe Apply/host-side rollback remains planned for v0.2.0.
+- Reworked PAM authentication to use a narrowly scoped, root-owned native verifier (after direct non-root PAM authentication failed on Ubuntu CI). Implemented role revocation checks, HTTPS-only session cookies and antiforgery protection in source. **PAM/UFW and HTTPS session behavior passed on a GitHub-hosted Ubuntu 24.04 runner.** Independent security review and real-VM/manual installation/upgrade verification are still pending; scoped Chrome/Edge E2E results are documented. Safe Apply/host-side rollback remains planned for v0.2.0.
 
 ### Breaking
 - None.

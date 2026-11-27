@@ -16,3 +16,16 @@ Date: 2026-11-27. Application fix commit: f30f48559212117071691012ff06aafee8c73e
 | WF-10 | Claim full host-level readiness from Docker | No VM/systemd/active UFW/independent signoff | Explicit gates in checklist | OPEN RELEASE GATES; no readiness claim |
 
 Initial missing-UFW minimal-container probe failed for absent ICU; rerun with invariant globalization passed its narrowly scoped unavailable-executable test. No application dependency requirement was removed.
+
+## Security stabilization follow-up
+
+| ID | Reproduction/cause | Fix | Verification/status |
+|---|---|---|---|
+| WF-11 | Hanging UFW child survived the .NET request timeout; Process.Dispose does not terminate it | Exact root-owned GNU timeout supervisor,6s TERM/1s KILL; API and sudoers paired upgrade | SEC-R01..04 and root CI regression PASS; FIXED |
+| WF-12 | Oversized UTF8 password returned before byte-buffer cleanup | Size guard moved inside try/finally | Boundary rejection PASS; cleanup source-reviewed; FIXED |
+| WF-13 | Service relied on inherited core/file-creation/logging defaults | Explicit core0, umask0077, journal routing and conservative kernel protections | Static unit verification PASS; VM runtime acceptance BLOCKED |
+| WF-14 | No approved disposable VM; host durability and active rules cannot be accepted from Docker | No host mutation; preserve blocked gates | VM install/restart/reboot/journald/PAM/UFW BLOCKED by owner-confirmed availability |
+
+Edge local functional compatibility passed after the owner manually opened the self-signed preview; trusted production TLS and other unavailable browsers are not asserted. Timed expiration outcome is appended when actually completed. Missing approved logo remains WF-09/BLOCKED.
+
+Timed20-minute Chrome expiry, relogin without reload and logout now PASS (actual timestamps in test report). The screen clears on next request; no proactive idle-screen timer is claimed. Other unavailable browsers remain untested.

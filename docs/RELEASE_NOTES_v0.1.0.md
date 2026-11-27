@@ -9,3 +9,5 @@ Validation and known limits: see TEST_REPORT_v0.1.0.md and RELEASE_CHECKLIST_v0.
 Install and rollback: follow docs/INSTALL.en.md or docs/INSTALL.fa.md in the reviewed commit on a disposable VM first. Existing local preview's original binary directory and startup script are preserved; restart with the saved original script to roll back the preview. No firewall/account mutations need rollback because this version only reads host state. Temporary test identities were removed.
 
 Do not create final v0.1.0 tag, merge main, or publish until explicit owner approval and all release gates pass.
+
+Security stabilization: bounded privileged UFW reader via exact GNU timeout, rejected UTF8 password-buffer cleanup, service umask/core/journal/kernel hardening, new deadline/cancellation/audit contract tests. API and sudoers must be upgraded together; restore the paired prior policy and startup script to roll back a local preview. Real20-minute Chrome expiry/relogin and six Edge scenarios passed; VM runtime/durability and original logo remain BLOCKED.

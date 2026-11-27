@@ -3,7 +3,34 @@
 Date: 2026-11-27 (Asia/Tehran). Author: Codex, acting on the owner's validation request.
 Release readiness: **NOT READY**. No release, final tag or merge authorized/performed.
 
-## Build and environment
+## Latest security stabilization — 2026-11-27
+
+Application security revision: `788fa1bc439bb18076af73ef9d1f95f6d056dd8a`; branch feature/v0.1.0-foundation. All four jobs passed in https://github.com/mehrdadbahrainy/wallforge/actions/runs/45995765243. Earlier78 local checks and13 Chrome scenarios below are retained as historical evidence, not unnecessarily repeated or silently relabeled as new runs.
+
+### Review and fixes
+
+- Confirmed defect WF-11: the .NET UFW request timeout disposed its Process object but left the child executing. Reproduced in a network-disabled Docker fixture using harmless fake sudo/UFW files; baseline probe failed with “Timed-out UFW child survived the request”. No real firewall executable/configuration was altered in this local reproduction. Fixed with a root-owned GNU timeout in the exact sudo command: TERM at6s and KILL after1s. API and sudoers must be upgraded together; remove the previous direct-UFW grant. Ordinary hang, TERM-resistant hang, client cancellation, and altered arguments are covered. CI repeats the privilege-boundary regression on its disposable Ubuntu runner with a temporary harmless UFW executable and restores the original afterward.
+- WF-12: a password above1024 UTF8 bytes could return after allocation before entering the cleanup finally block. Moved the size guard inside try/finally so rejected byte buffers are zeroed. UTF8-boundary rejection passed; memory erasure is source-reviewed, not claimed from heap forensics.
+- Hardening WF-13: systemd now sets UMask0077, LimitCORE0, explicit stdout/stderr journal routing and identifier, kernel/control-group protections, realtime restriction and locked personality. Preview startup also sets umask077 and core limit0. NoNewPrivileges remains false because the exact sudo operations require elevation. Static unit verification passed; runtime systemd/PAM compatibility is BLOCKED until an approved disposable VM exists.
+- PAM helper review: root/system UID rejection, bounded lengths, NUL rejection, hidden-password-only conversation, pam_authenticate plus pam_acct_mgmt, independent10-second alarm, disabled core dump, password-buffer clearing and no shell/argv secrets remain intact. The API cannot write the deployed helper, parent directory, PAM configuration, sudoers or timeout executable. This scoped source/permission review does not replace independent security approval.
+- Audit review: the newest250 events are memory-only; all300 fixture events, including evicted ones, reached ILogger. A recreated store is empty by design. Explicit journal routing does not establish persistence: host journald retention, service restart/reboot durability and real PAM policy checks remain BLOCKED. No journal host policy or real host firewall was changed.
+- A focused500-response experiment showed the original exception path already returns generic errors with no-store. No middleware change was retained for that ruled-out concern.
+
+### Incremental results and provenance
+
+Eleven new focused security assertions passed: SEC-R01..11 in security-stabilization-results.json. Logs: security-stabilization-ci.txt. Builds and existing CI regression suites ran as configured for the changed code; previous successful local Docker/UI suites were not rerun wholesale. The isolated fixture had no network or added capabilities.
+
+Browser versions found: Chrome158.0.8127.37 and Edge158.0.4370.45. Edge automation adapter was unavailable, so the installed app was inspected through native UI. It initially displayed NET::ERR_CERT_AUTHORITY_INVALID; the assistant did not bypass it or change trust settings. The owner subsequently opened the application manually, after which six Edge scenarios passed: rendering, wrong-password rejection/field clearing, Viewer overview/no Activity, Firewall empty state, users/groups tables, and logout. Browser password saving was declined. Edge still showed “Not secure”; compatibility results are not production TLS trust acceptance. Firefox was not installed at the checked standard location; Safari is unavailable on this Windows environment. No additional browser pass is claimed.
+
+The real Chrome idle-expiration test began2026-11-27T11:57:17.536Z (15:27:17 Asia/Tehran), using a disposable Viewer and unchanged20-minute/non-sliding session configuration on preview revision79bd5e1. The preview is deliberately not restarted until the interval completes. The Edge login/logout used a separate browser cookie and did not renew the Chrome cookie. The timed test is now complete; exact post-idle observation and successful relogin/logout are recorded in the completion section below.
+
+### Blocked environment checks
+
+The owner confirmed no approved disposable Ubuntu24.04 VM is available and prohibited use/modification of existing WSL2 or Hyper-V VMs. Hyper-V enumeration was denied before that clarification. No VM or WSL instance was created, started or modified. Clean VM installation, service restart, reboot/key continuity, persistent journald, real PAM lock/account-policy acceptance and active IPv4/IPv6 UFW inventory are all BLOCKED. Docker and CI successes are not substitutes.
+
+Approved Forge Shield Emblem/logo/favicon replacement remains BLOCKED until the original asset is supplied. No substitute was generated. Independent security/PR approval and explicit merge/tag/publication approval remain open. **Release readiness: NOT READY**.
+
+## Historical validation — build and environment
 
 - Branch: `feature/v0.1.0-foundation`; application code tested: `f30f48559212117071691012ff06aafee8c73ef5`; CI fixture correction: `8a454a41d1dea1def9a441a43912022002f7206b`.
 - Baseline checkout: `cae4c558d83366770a385fda755397c0ff6649c7`. The pre-existing binary bundle has no embedded commit identity; its exact binary provenance is not independently proven. Its Angular main bundle matched the baseline build (`main-JGVC7EJ6.js`).
@@ -144,12 +171,12 @@ Thirteen scenarios were executed through the connected Chrome browser. Pre-fix c
 |---|---|---|---|---|---|
 | BRAND-01 | Approved logo/header/login/favicon | Exact Forge Shield Emblem asset | Asset unavailable; owner confirmed it is only in an earlier chat; placeholders retained, no redesign | BLOCKED | Owner supplies original asset; integrate and retest |
 | VM-01 | Clean Ubuntu VM installation and reboot | Documented install/start works | No disposable VM available in this task; Docker is insufficient | BLOCKED | Provision disposable Ubuntu 24.04 VM and follow both guides |
-| UFW-04 | Active IPv4/IPv6 numbered rules | Correct live rule inventory | Container UFW inactive; parser checks only for active output | NOT RUN | Use preconfigured disposable VM; avoid host/production firewall changes |
-| OPS-01 | systemd, journald persistence and reboot/key continuity | Restricted service starts and durable events persist | Container lacks systemd/journald validation | NOT RUN | VM install and restart/reboot audit checks |
+| UFW-04 | Active IPv4/IPv6 numbered rules | Correct live rule inventory | Container UFW inactive; parser checks only for active output | BLOCKED | Use preconfigured disposable VM; avoid host/production firewall changes |
+| OPS-01 | systemd, journald persistence and reboot/key continuity | Restricted service starts and durable events persist | Container lacks systemd/journald validation | BLOCKED | VM install and restart/reboot audit checks |
 | SEC-10 | Independent PAM/sudoers hardening review | Reviewer signoff | Source/permissions inspected locally; independent review absent | BLOCKED | Review helper, sudo boundary, PAM stack and service hardening |
-| UI-14 | Edge/Firefox/Safari compatibility | Browser matrix passes | Only connected Chrome tested | NOT RUN | Execute additional supported-browser matrix |
-| AUTH-09 | Real PAM lock/password change after active login | Documented revocation semantics | Group removal tested; password/account lock revocation beyond ticket expiry not verified | NOT RUN | Real VM PAM/account-policy acceptance |
-| UI-15 | Timed 20-minute idle browser expiration | Expiration and fresh login work at real timeout | Protected expired ticket and revoked browser session tested; timed run not executed | NOT RUN | Complete timed browser run |
+| UI-14 | Unavailable Firefox/Safari coverage | Available supported browsers tested | Chrome and Edge workflows executed; Firefox/Safari unavailable and not tested | NOT RUN | Wider platform coverage not asserted |
+| AUTH-09 | Real PAM lock/password change after active login | Documented revocation semantics | Group removal tested; password/account lock revocation beyond ticket expiry not verified | BLOCKED | Real VM PAM/account-policy acceptance |
+| UI-15 | Real20-minute browser idle expiration | Reject expired session and permit fresh login | At1218.528s Refresh showed expiration/login; same-page fresh login and logout succeeded | PASS | Incremental real-time observation; source79bd5e1 session configuration unchanged by788fa1b |
 | REVIEW-01 | Reviewed release candidate | Independent PR approval | Existing PR #2 remains draft, no submitted reviews observed | BLOCKED | Request/obtain review after open gates close |
 
 ## Safety, audit and current preview
@@ -174,3 +201,19 @@ Artifact from successful revision8a454a41d1dea1def9a441a43912022002f7206b, workf
 A new ubuntu:24.04 container was created with no published ports and no added capabilities. The exact packaged install.sh ran as root with a generated throwaway password supplied through stdin. No SDK/Node was installed. Package dependencies were installed from Ubuntu repositories. Installer exit0, sudoers valid, API started unprivileged. HTTPS /api/health returned200 with CA+hostname verification and no-store. Valid/expired protected tickets returned200/401. Without NET_ADMIN, UFW inspection safely reported unavailable. Five checks passed (clean-container-results.json); sanitized installation output is clean-container-install.log. The clean container was stopped and removed afterward; the original lab remains running.
 
 This establishes clean **Docker preview** installation only, not a clean VM/systemd installation. VM-01/OPS-01/UFW-04 remain unverified.
+
+## Final handoff verification
+
+Final branch head: `79bd5e1c63b5bbfd49fcb6919d027f808577bc90`. All four jobs in workflow run64 completed successfully: https://github.com/mehrdadbahrainy/wallforge/actions/runs/45993508927. Git working tree clean. PR#2 remains draft and unmerged; independent review pending. These final metadata updates are synchronized to SharedSpace and local handoff files; the Git evidence snapshot remains at the final head above to avoid changing the already-verified revision. No tag or Release created.
+
+### Completed real idle-expiration observation
+
+Login observed2026-11-27T11:57:17.536Z; first post-idle Refresh at2026-11-27T12:17:36.064Z; elapsed1218.5s (at least20 real minutes). No clock change, artificial ticket lifetime, API restart or group revocation was performed; the agent left the Chrome test page untouched during the interval. The separate Edge cookie was independent. Refresh returned the application to Secure sign in with “Your session has expired or access was revoked”; host/account/activity view state was cleared. Fresh login without page reload then succeeded, followed by logout. **Timed20-minute browser expiration and relogin: PASS.**
+
+The idle UI detects expiry on its next server request; it does not proactively erase the screen at the exact20-minute boundary. This behavior and the transient cached view are disclosed for independent review. The test used preview revision79bd5e1; the20-minute non-sliding cookie settings and frontend are unchanged by security revision788fa1b. Protected-ticket expiry also passed on788fa1b in CI. No expired-ticket acceptance is asserted.
+
+### Updated Docker preview deployment
+
+After the timed test and successful logout, the locally built security revision788fa1b was deployed as a paired API/sudoers update. The preview uses `/opt/wallforge/security-api`, with the prior `/opt/wallforge/validated-api` retained. Rollback files: `/opt/wallforge/start.before-security.sh` and root-owned0440 `/opt/wallforge/sudoers.before-security`; restore the matching prior policy/startup together, with only one API running. The original pre-validation binaries/startup are also untouched.
+
+Post-update targeted smoke checks: HTTPS health200, exactly one updated API process, core soft/hard limits0/0, correct read-only UFW status inactive through the new exact timeout command, sudoers mode0440 root:root, and private preview console log `/var/log/wallforge-preview.log` mode0600 root:root. Only127.0.0.1:5443 is published. Fixture account removed and network-disabled security fixture container removed. The console file is local preview output capture, not a claim of systemd/journald or reboot durability. No real host firewall, WSL instance or existing VM was changed.

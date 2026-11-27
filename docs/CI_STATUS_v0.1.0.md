@@ -14,3 +14,11 @@ Documentation/evidence may be committed after this tested revision; follow the P
 No merge, final version tag, or release publication performed. **Release readiness: NOT READY** until logo, VM/host checks and independent review gates close.
 
 Clean-install verification: the artifact ZIP and tar SHA256 matched; packaged installer and HTTPS/session/unavailable-UFW checks passed in a fresh Ubuntu container. See clean-container-results.json and sanitized install log.
+
+## Final handoff verification
+
+Final branch head: `79bd5e1c63b5bbfd49fcb6919d027f808577bc90`. All four jobs in workflow run64 completed successfully: https://github.com/mehrdadbahrainy/wallforge/actions/runs/45993508927. Git working tree clean. PR#2 remains draft and unmerged; independent review pending. These final metadata updates are synchronized to SharedSpace and local handoff files; the Git evidence snapshot remains at the final head above to avoid changing the already-verified revision. No tag or Release created.
+
+## Security revision CI
+
+`788fa1bc439bb18076af73ef9d1f95f6d056dd8a`: all four jobs passed in https://github.com/mehrdadbahrainy/wallforge/actions/runs/45995765243. New systemd static verification, UTF8/audit contracts and root UFW deadline/cancellation/altered-argument checks passed. VM runtime acceptance remains BLOCKED.
