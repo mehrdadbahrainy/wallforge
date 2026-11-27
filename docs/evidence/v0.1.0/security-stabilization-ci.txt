@@ -1,0 +1,42 @@
+Security stabilization CI evidence
+Revision:788fa1bc439bb18076af73ef9d1f95f6d056dd8a
+Run:https://github.com/mehrdadbahrainy/wallforge/actions/runs/45995765243
+
+2026-11-27T12:05:46.2878623Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-27T12:05:46.9373238Z (node:2100) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-27T12:05:46.9376121Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-27T12:06:51.0289816Z PASS read-only UFW status: inactive
+2026-11-27T12:06:51.0290880Z PASS Linux integration: read-ufw / admin
+2026-11-27T12:06:51.1425833Z PASS Linux integration: valid / viewer
+2026-11-27T12:06:53.6514787Z PASS Linux integration: invalid-password / admin
+2026-11-27T12:06:53.7619824Z PASS Linux integration: valid / none
+2026-11-27T12:06:53.9101051Z PASS Linux integration: account-disabled / admin
+2026-11-27T12:06:57.2626967Z PASS unknown API routes return 404
+2026-11-27T12:06:57.2627565Z PASS anonymous endpoints require session and CSRF
+2026-11-27T12:06:57.5669067Z PASS sensitive responses are not cached and pre-login CSRF is rejected
+2026-11-27T12:06:57.5670078Z PASS admin HTTPS authentication and read-only host views; mutations blocked
+2026-11-27T12:06:57.6445327Z PASS mid-session group revocation
+2026-11-27T12:06:57.7654104Z PASS viewer role, identity-bound CSRF refresh, and logout
+2026-11-27T12:06:57.9953029Z PASS unexpired protected ticket returns 200
+2026-11-27T12:06:57.9975048Z PASS expired protected ticket returns 401
+2026-11-27T12:06:58.0584702Z PASS unavailable UFW fails closed with a safe error
+2026-11-27T12:06:58.1394753Z PASS password exceeding1024 UTF8 bytes is rejected before helper invocation
+2026-11-27T12:06:58.1734756Z PASS audit UI retains the newest250 events in reverse order
+2026-11-27T12:06:58.1735357Z PASS all300 audit events reach ILogger, including evicted UI events
+2026-11-27T12:06:58.1736012Z PASS audit UI reset is explicit; journal durability is a separate host gate
+2026-11-27T12:07:05.2630244Z PASS hanging UFW terminates within the privileged deadline; no child survives
+2026-11-27T12:07:13.4092267Z PASS request cancellation does not leave UFW alive beyond the privileged deadline
+2026-11-27T12:07:13.4219605Z PASS altered timeout arguments remain forbidden
+2026-11-27T12:07:13.6843377Z (node:3334) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-27T12:07:13.6844692Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-27T12:07:14.1441457Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-dotnet@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-11-27T12:05:45.7684341Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-27T12:05:46.3742093Z (node:2102) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-27T12:05:46.3743213Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-27T12:05:47.1547337Z ##[group]Run dotnet build src/WallForge.Api/WallForge.Api.csproj -c Release -warnaserror
+2026-11-27T12:06:01.6869728Z     0 Warning(s)
+2026-11-27T12:06:01.6869998Z     0 Error(s)
+2026-11-27T12:06:05.1982733Z ##[group]Run systemd-analyze verify ops/systemd/wallforge-api.service
+2026-11-27T12:06:08.6952016Z (node:2514) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-27T12:06:08.6952627Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-27T12:06:08.9113197Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-dotnet@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

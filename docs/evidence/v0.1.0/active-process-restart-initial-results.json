@@ -1,0 +1,12 @@
+[
+  {
+    "scenario": "Nonmember valid password cannot create API session",
+    "status": "PASS",
+    "actual": "HTTP401"
+  },
+  {
+    "scenario": "Admin PAM login before restart",
+    "status": "FAIL",
+    "actual": "HTTP200"
+  }
+]

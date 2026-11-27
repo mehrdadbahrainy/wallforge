@@ -1,0 +1,93 @@
+<div class="app-shell">
+  <header class="topbar" [class.authenticated]="!!session()">
+    <div class="header-brand">
+      <img class="brand-logo" src="/brand/wallforge-horizontal-light.svg" alt="WallForge" width="182" height="71">
+      <span class="header-context">Host console</span>
+    </div>
+    <div class="header-controls">
+      <span class="environment"><span class="status-dot" aria-hidden="true"></span>Read-only</span>
+      @if (session(); as user) {
+        <div class="account">
+          <span class="account-avatar" aria-hidden="true">{{ user.userName.slice(0, 1).toUpperCase() }}</span>
+          <div class="account-details"><strong class="account-name" [title]="user.userName">{{ user.userName }}</strong><span class="account-role">{{ user.role === 'admin' ? 'Administrator' : 'Viewer' }}</span></div>
+          <button type="button" class="button ghost sign-out" (click)="logout()">Sign out</button>
+        </div>
+      } @else {
+        <span class="header-session-note">Ubuntu account access</span>
+      }
+    </div>
+  </header>
+  @if (loading()) { <main class="center"><p>Loading WallForge…</p></main> }
+  @else if (!session()) {
+    <main class="center">
+      <form class="login" (ngSubmit)="login()">
+        <img class="login-logo" src="/brand/wallforge-horizontal-light.svg" alt="WallForge" width="1330" height="520"><h1>Secure sign in</h1>
+        <p class="muted">Use your Ubuntu account. WallForge access requires an authorized Linux group.</p>
+        <label for="loginName">Ubuntu username</label>
+        <input id="loginName" name="username" autocomplete="username" required [ngModel]="loginName()" (ngModelChange)="loginName.set($event)">
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" type="password" name="password" autocomplete="current-password" required [ngModel]="loginPassword()" (ngModelChange)="loginPassword.set($event)">
+        <button class="button primary" type="submit" [disabled]="busy()"> {{ busy() ? 'Verifying…' : 'Sign in' }}</button>
+        @if (error()) { <p class="alert" role="alert">{{ error() }}</p> }
+        <p class="hint">Root sign-in is disabled. HTTPS is required.</p>
+      </form>
+    </main>
+  } @else {
+    <div class="workspace">
+      <nav class="sidebar" aria-label="Main navigation">
+        <button aria-label="Overview" [attr.aria-current]="currentView()==='overview' ? 'page' : null" [class.selected]="currentView()==='overview'" (click)="go('overview')">▣ <span>Overview</span></button>
+        <button aria-label="Firewall" [attr.aria-current]="currentView()==='firewall' ? 'page' : null" [class.selected]="currentView()==='firewall'" (click)="go('firewall')">⛨ <span>Firewall</span></button>
+        <button aria-label="Local users" [attr.aria-current]="currentView()==='users' ? 'page' : null" [class.selected]="currentView()==='users'" (click)="go('users')">♙ <span>Local users</span></button>
+        @if (session()?.role === 'admin') {
+          <button aria-label="Activity" [attr.aria-current]="currentView()==='activity' ? 'page' : null" [class.selected]="currentView()==='activity'" (click)="go('activity')">☷ <span>Activity</span></button>
+        }
+        <p class="nav-note">v0.1.0-rc.1 — read-only</p>
+      </nav>
+      <main class="content">
+        <div class="page-heading"><div><span class="eyebrow">LOCAL UBUNTU HOST</span>
+          <h1>{{ currentView()==='overview' ? 'Overview' : currentView()==='firewall' ? 'Firewall' : currentView()==='users' ? 'Local users' : 'Activity' }}</h1>
+          <p class="muted">Observe your host securely. Modifications are not available in this release.</p>
+          </div><button type="button" class="button outline" (click)="refresh()" [disabled]="busy()">Refresh</button></div>
+        @if (error()) { <p class="alert" role="alert">{{ error() }}</p> }
+        @if (currentView()==='overview') {
+          <div class="metrics">
+            <article class="tile"><small>UFW status</small><h2>{{ firewall()?.status ?? 'unknown' }}</h2><p>Firewall engine</p></article>
+            <article class="tile"><small>UFW rules</small><h2>{{ firewall()?.rules?.length ?? '—' }}</h2><p>Numbered rules</p></article>
+            <article class="tile"><small>Local users</small><h2>{{ inventory()?.users?.length ?? '—' }}</h2><p>Including system accounts</p></article>
+            <article class="tile"><small>Account role</small><h2>{{ session()?.role }}</h2><p>Linux group access</p></article>
+          </div>
+          <div class="notice"><strong>Read-only mode</strong><p>WallForge v0.1.0 cannot change firewall rules, Linux users, groups, SSH keys or sudo permissions. Safe Apply is planned for v0.2.0.</p></div>
+        }
+        @if (currentView()==='firewall') {
+          <section class="panel"><h2>UFW rules <span class="chip">{{ firewall()?.status ?? 'unknown' }}</span></h2>
+            @if (!firewall()?.available) { <p class="alert">{{ firewall()?.error ?? 'UFW inspection unavailable.' }}</p> }
+            @else if (firewall()?.rules?.length === 0) { <p class="muted">No numbered UFW rules found.</p> }
+            @else { <div class="rule-list">@for (rule of firewall()?.rules ?? []; track $index) { <div class="rule">{{ rule }}</div> }</div> }
+          </section>
+        }
+        @if (currentView()==='users') {
+          <section class="panel"><h2>Local Linux accounts</h2><div class="table-wrap"><table>
+            <thead><tr><th>User</th><th>UID</th><th>GID</th><th>Home</th><th>Shell</th><th>Type</th></tr></thead>
+            <tbody>@for (user of inventory()?.users ?? []; track user.uid) {
+              <tr><td><strong>{{ user.userName }}</strong></td><td>{{ user.uid }}</td><td>{{ user.gid }}</td><td>{{ user.home }}</td><td>{{ user.shell }}</td><td>{{ user.systemAccount ? 'System' : 'Human' }}</td></tr>
+            }</tbody></table></div></section>
+          <section class="panel"><h2>Local groups</h2><div class="table-wrap"><table>
+            <thead><tr><th>Group</th><th>GID</th><th>Explicit members</th></tr></thead>
+            <tbody>@for (group of inventory()?.groups ?? []; track group.gid) {
+              <tr><td><strong>{{ group.name }}</strong></td><td>{{ group.gid }}</td><td>{{ group.members.join(', ') || '—' }}</td></tr>
+            }</tbody></table></div></section>
+        }
+        @if (currentView()==='activity' && session()?.role==='admin') {
+          <section class="panel"><h2>Recent events <span class="chip">Memory only</span></h2>
+            <p class="muted">These entries reset when the API restarts. For full events, review the server's journal.</p>
+            <div class="table-wrap"><table><thead><tr><th>Time (UTC)</th><th>Action</th><th>Actor</th></tr></thead>
+            <tbody>@for (event of events(); track $index) {
+              <tr><td>{{ event.when }}</td><td>{{ event.event }}</td><td>{{ event.actor }}</td></tr>
+            }</tbody></table></div>
+          </section>
+        }
+        <footer>WallForge · Open source · Safety-first server management</footer>
+      </main>
+    </div>
+  }
+</div>

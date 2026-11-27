@@ -1,0 +1,39 @@
+[Unit]
+Description=WallForge read-only API
+After=network.target
+
+[Service]
+Type=simple
+User=wallforge-api
+Group=wallforge-api
+WorkingDirectory=/opt/wallforge/api
+ExecStart=/usr/bin/dotnet /opt/wallforge/api/WallForge.Api.dll
+Environment=ASPNETCORE_URLS=http://127.0.0.1:5080
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Restart=on-failure
+RestartSec=3
+UMask=0077
+LimitCORE=0
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=wallforge
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+RestrictRealtime=true
+LockPersonality=true
+NoNewPrivileges=false
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/wallforge
+StateDirectory=wallforge
+StateDirectoryMode=0700
+Environment=WALLFORGE_KEYS_DIR=/var/lib/wallforge/keys
+# Restricted sudo for PAM verification and one fixed UFW status command requires setuid.
+# Keep these sudoers entries strictly argument-exact and binaries root-owned.
+# Do not give the service account any other sudo privileges.
+
+[Install]
+WantedBy=multi-user.target

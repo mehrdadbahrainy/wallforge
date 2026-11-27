@@ -1,0 +1,9 @@
+{
+  "start_utc": "2026-11-27T11:57:17.536000+00:00",
+  "post_idle_refresh_utc": "2026-11-27T12:17:36.064Z",
+  "elapsed_seconds": 1218.528,
+  "scenario": "Real20-minute idle expiry; fresh login without reload; logout",
+  "status": "PASS",
+  "preview_revision": "79bd5e1c63b5bbfd49fcb6919d027f808577bc90",
+  "note": "Session settings/frontend unchanged by788fa1b; detects expiration on next request"
+}

@@ -1,0 +1,156 @@
+name: wallforge-ci
+on:
+  push:
+    branches: [main, feature/v0.1.0-foundation]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  api:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Build API
+        run: dotnet build src/WallForge.Api/WallForge.Api.csproj -c Release -warnaserror
+      - name: Run safe, dependency-free smoke tests
+        run: dotnet run -c Release --project tests/WallForge.SmokeTests/WallForge.SmokeTests.csproj
+      - name: Verify systemd service syntax
+        run: systemd-analyze verify ops/systemd/wallforge-api.service
+      - name: Smoke-test HTTP routing and auth denial
+        shell: bash
+        run: |
+          set -euo pipefail
+          ASPNETCORE_URLS=http://127.0.0.1:5098 dotnet run --no-launch-profile --no-build -c Release --project src/WallForge.Api/WallForge.Api.csproj &
+          pid=$!
+          trap 'kill "$pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:5098/api/health > /tmp/wf-health.json; then break; fi
+            sleep 1
+          done
+          grep -q '"status":"ok"' /tmp/wf-health.json
+          test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:5098/api/auth/csrf)" = "403"
+          test "$(curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:5098/api/host/users)" = "401"
+          test "$(curl -sS -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:5098/api/auth/login -H 'Content-Type: application/json' --data '{"userName":"root","password":"x"}')" = "400"
+  angular:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci --no-audit --no-fund
+      - name: Component session regressions
+        working-directory: frontend
+        run: npm test
+      - name: Typecheck
+        working-directory: frontend
+        run: npm run typecheck
+      - name: Build Angular
+        working-directory: frontend
+        run: npm run build
+      - name: Approved branding integrity
+        run: python3 tests/branding/verify-assets.py
+
+  linux-integration:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Install minimal Ubuntu host dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ufw libpam0g libpam0g-dev sudo gcc
+          sudo groupadd --system --force wallforge-admin
+          sudo groupadd --system --force wallforge-viewer
+          sudo useradd --system --home-dir /var/lib/wallforge --shell /usr/sbin/nologin wallforge-api
+          sudo useradd -m -u 1501 -s /bin/bash -G wallforge-admin wf-ci-admin
+          sudo useradd -m -u 1502 -s /bin/bash -G wallforge-viewer wf-ci-viewer
+          sudo mkdir -p /usr/local/libexec
+          gcc -O2 -Wall -Wextra -Werror -fstack-protector-strong -D_FORTIFY_SOURCE=3 -o /tmp/wallforge-pam-auth src/WallForge.PamHelper/wallforge-pam-auth.c -lpam
+          sudo install -o root -g root -m 0755 /tmp/wallforge-pam-auth /usr/local/libexec/wallforge-pam-auth
+          sudo install -o root -g root -m 0644 ops/pam.d/wallforge /etc/pam.d/wallforge
+          sudo install -o root -g root -m 0440 ops/sudoers.d/wallforge /etc/sudoers.d/wallforge
+          sudo visudo -cf /etc/sudoers.d/wallforge
+      - name: Build integration harness
+        run: dotnet publish tests/WallForge.LinuxIntegration/WallForge.LinuxIntegration.csproj -c Release -o /tmp/wallforge-integration
+      - name: Test PAM, local role restrictions, and read-only UFW on disposable Ubuntu runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          password="$(openssl rand -hex 18)"
+          printf '%s:%s\n' wf-ci-admin "$password" | sudo chpasswd
+          printf '%s:%s\n' wf-ci-viewer "$password" | sudo chpasswd
+          printf '%s\n' "$password" | sudo -u wallforge-api /usr/bin/dotnet /tmp/wallforge-integration/WallForge.LinuxIntegration.dll wf-ci-admin admin read-ufw
+          printf '%s\n' "$password" | sudo -u wallforge-api /usr/bin/dotnet /tmp/wallforge-integration/WallForge.LinuxIntegration.dll wf-ci-viewer viewer valid
+          printf '%s\n' "definitely-wrong-password" | sudo -u wallforge-api /usr/bin/dotnet /tmp/wallforge-integration/WallForge.LinuxIntegration.dll wf-ci-admin admin invalid-password
+          sudo gpasswd -d wf-ci-admin wallforge-admin
+          printf '%s\n' "$password" | sudo -u wallforge-api /usr/bin/dotnet /tmp/wallforge-integration/WallForge.LinuxIntegration.dll wf-ci-admin none valid
+          sudo usermod -aG wallforge-admin wf-ci-admin
+          sudo usermod --expiredate 1 wf-ci-admin
+          printf '%s\n' "$password" | sudo -u wallforge-api /usr/bin/dotnet /tmp/wallforge-integration/WallForge.LinuxIntegration.dll wf-ci-admin admin account-disabled
+
+      - name: Authenticated HTTPS API integration on temporary Ubuntu runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo usermod --expiredate -1 wf-ci-admin
+          dotnet publish src/WallForge.Api/WallForge.Api.csproj -c Release -o /tmp/wallforge-api
+          bash tests/e2e/auth-session.sh
+
+      - name: PAM UTF8 and audit contracts
+        run: |
+          sudo -u wallforge-api /usr/bin/dotnet /tmp/wallforge-integration/WallForge.LinuxIntegration.dll --pam-overlong
+          /usr/bin/dotnet /tmp/wallforge-integration/WallForge.LinuxIntegration.dll --audit-contract
+      - name: Privileged UFW deadline and cancellation regression
+        run: bash tests/e2e/ufw-deadline.sh
+
+  local-preview-bundle:
+    name: Build disposable Docker preview bundle (Linux x64)
+    runs-on: ubuntu-24.04
+    needs: [api, angular, linux-integration]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Build self-contained API and Angular UI
+        run: |
+          dotnet publish src/WallForge.Api/WallForge.Api.csproj -c Release -r linux-x64 --self-contained true -o preview/api
+          (cd frontend && npm ci --no-audit --no-fund && npm run build)
+          mkdir -p preview/api/wwwroot
+          cp -a frontend/dist/wallforge/browser/. preview/api/wwwroot/
+      - name: Package restricted helper and local installer
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq gcc libpam0g-dev
+          gcc -O2 -Wall -Wextra -Werror -fstack-protector-strong -D_FORTIFY_SOURCE=3 -o preview/wallforge-pam-auth src/WallForge.PamHelper/wallforge-pam-auth.c -lpam
+          cp ops/pam.d/wallforge preview/pam-wallforge
+          cp ops/sudoers.d/wallforge preview/sudoers-wallforge
+          cp ops/local-preview/install.sh preview/install.sh
+          bash -n preview/install.sh
+          test -x preview/api/WallForge.Api
+          test -f preview/api/wwwroot/index.html
+          tar -czf wallforge-local-preview-linux-x64.tar.gz -C preview .
+          sha256sum wallforge-local-preview-linux-x64.tar.gz > SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wallforge-local-preview-linux-x64
+          path: |
+            wallforge-local-preview-linux-x64.tar.gz
+            SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 7

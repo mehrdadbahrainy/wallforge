@@ -1,0 +1,13 @@
+[
+  {"id":"SEC-R01","scenario":"Ordinary hung UFW reader","status":"PASS","actual":"Fixed privileged deadline completes within12-second probe limit; no child remains","baseline":"FAIL: child survived the request timeout"},
+  {"id":"SEC-R02","scenario":"TERM-resistant UFW reader","status":"PASS","actual":"KILL deadline terminates reader; no child remains"},
+  {"id":"SEC-R03","scenario":"Client cancellation while UFW hangs","status":"PASS","actual":"Cancellation propagates and root deadline removes child within bounded grace"},
+  {"id":"SEC-R04","scenario":"Changed timeout executable/arguments","status":"PASS","actual":"CI sudo policy rejects timeout6s /usr/bin/id"},
+  {"id":"SEC-R05","scenario":"Password longer than1024 UTF8 bytes","status":"PASS","actual":"Authentication rejected; cleanup-path coverage reviewed in source, no heap-forensics claim"},
+  {"id":"SEC-R06","scenario":"Audit UI bounded order","status":"PASS","actual":"Newest250 of300 events retained in reverse order"},
+  {"id":"SEC-R07","scenario":"Audit logger includes evicted UI events","status":"PASS","actual":"All300 events delivered at Information level to the test ILogger"},
+  {"id":"SEC-R08","scenario":"Audit-store recreation","status":"PASS","actual":"UI queue starts empty; this explicitly does not establish journal persistence"},
+  {"id":"SEC-R09","scenario":"API effective write access to trust files","status":"PASS","actual":"API cannot write helper, helper directory, sudoers, PAM config or GNU timeout"},
+  {"id":"SEC-R10","scenario":"Updated sudoers syntax","status":"PASS","actual":"visudo -cf reports parsed OK"},
+  {"id":"SEC-R11","scenario":"Hardened systemd unit static verification","status":"PASS","actual":"systemd-analyze verify passed in Ubuntu CI; live service/reboot behavior BLOCKED"}
+]

@@ -1,0 +1,62 @@
+[
+  {
+    "scenario": "Restart fixture valid PAM/admin membership preflight",
+    "status": "PASS",
+    "actual": "PASS Linux integration: valid / admin"
+  },
+  {
+    "scenario": "Nonmember valid password cannot create API session",
+    "status": "PASS",
+    "actual": "HTTP401"
+  },
+  {
+    "scenario": "Admin PAM login before restart",
+    "status": "PASS",
+    "actual": "HTTP200; {\"userName\":\"wf-act-restart\",\"role\":\"admin\"}"
+  },
+  {
+    "scenario": "Active IPv4/IPv6 rules survive UFW reload",
+    "status": "PASS",
+    "actual": "Exact8 rule inventory retained; this is not reboot"
+  },
+  {
+    "scenario": "HTTPS survives UFW reload",
+    "status": "PASS",
+    "actual": "HTTP200 with verified TLS"
+  },
+  {
+    "scenario": "Login reaches recent audit before process restart",
+    "status": "PASS",
+    "actual": "Disposable login actor recorded"
+  },
+  {
+    "scenario": "Pre-restart authenticated cookie survives controlled API process restart",
+    "status": "PASS",
+    "actual": "HTTP200; same service-owned persistent data-protection keys"
+  },
+  {
+    "scenario": "Recent audit store resets on actual API process restart",
+    "status": "PASS",
+    "actual": "Empty as documented; not a durable audit database"
+  },
+  {
+    "scenario": "Private local console log retains pre-restart event",
+    "status": "PASS",
+    "actual": "Root-private file retains actor; journald/reboot not asserted"
+  },
+  {
+    "scenario": "Active8-rule inventory remains readable after API restart",
+    "status": "PASS",
+    "actual": "HTTP200;4 IPv4+4 IPv6 rules"
+  },
+  {
+    "scenario": "Pre-restart CSRF token permits authenticated logout after restart",
+    "status": "PASS",
+    "actual": "HTTP204"
+  },
+  {
+    "scenario": "Logged-out pre-restart cookie rejected",
+    "status": "PASS",
+    "actual": "HTTP401"
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "browser":"Microsoft Edge158.0.4370.45",
+  "environment":"Windows native UI, existing Docker preview79bd5e1",
+  "tls_note":"Initially ERR_CERT_AUTHORITY_INVALID. Owner manually opened the local self-signed page; agent did not bypass warnings or change trust settings. Not secure indicator remained; no production TLS acceptance claimed.",
+  "password_saved":false,
+  "results":[
+    {"id":"EDGE-01","scenario":"Login rendering","status":"PASS"},
+    {"id":"EDGE-02","scenario":"Invalid password rejected and password field cleared","status":"PASS"},
+    {"id":"EDGE-03","scenario":"Viewer login, Overview metrics and no Activity navigation","status":"PASS"},
+    {"id":"EDGE-04","scenario":"Firewall navigation/inactive empty state","status":"PASS"},
+    {"id":"EDGE-05","scenario":"Users and groups tables render","status":"PASS"},
+    {"id":"EDGE-06","scenario":"Logout returns to login","status":"PASS"}
+  ]
+}

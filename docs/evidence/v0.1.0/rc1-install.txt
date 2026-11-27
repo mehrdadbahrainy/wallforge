@@ -1,0 +1,19 @@
+Reading package lists...
+Building dependency tree...
+Reading state information...
+ca-certificates is already the newest version (20260816ubuntu0.24.04.2).
+sudo is already the newest version (1.9.15p5-3ubuntu5.24.04.4).
+ufw is already the newest version (0.36.2-6).
+libpam0g is already the newest version (1.5.3-5ubuntu5.7).
+libpam-modules is already the newest version (1.5.3-5ubuntu5.7).
+libpam-runtime is already the newest version (1.5.3-5ubuntu5.7).
+openssl is already the newest version (3.0.13-0ubuntu3.16).
+libicu74 is already the newest version (74.2-1ubuntu3.1).
+libssl3t64 is already the newest version (3.0.13-0ubuntu3.16).
+zlib1g is already the newest version (1:1.3.dfsg-3.1ubuntu2.3).
+libgssapi-krb5-2 is already the newest version (1.20.1-6ubuntu2.12).
+0 upgraded, 0 newly installed, 0 to remove and 2 not upgraded.
+Existing wfadmin account and password preserved.
+/etc/sudoers.d/wallforge: parsed OK
+Run: bash /opt/wallforge/start.sh ; browse https://localhost:5443
+

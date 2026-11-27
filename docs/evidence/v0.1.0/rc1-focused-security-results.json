@@ -1,0 +1,57 @@
+[
+  {
+    "id": "RC-SEC-01",
+    "scenario": "Privileged UFW hang bounded by root timeout",
+    "status": "PASS"
+  },
+  {
+    "id": "RC-SEC-02",
+    "scenario": "UFW cancellation bounded",
+    "status": "PASS"
+  },
+  {
+    "id": "RC-SEC-03",
+    "scenario": "Altered privileged timeout arguments denied",
+    "status": "PASS"
+  },
+  {
+    "id": "RC-SEC-04",
+    "scenario": "Unexpired protected session accepted",
+    "status": "PASS"
+  },
+  {
+    "id": "RC-SEC-05",
+    "scenario": "Expired protected session rejected",
+    "status": "PASS"
+  },
+  {
+    "id": "RC-SEC-06",
+    "scenario": "Oversized PAM password cleanup path",
+    "status": "PASS"
+  },
+  {
+    "id": "RC-SEC-07",
+    "scenario": "Newest250 of300 audit events ordered",
+    "status": "PASS"
+  },
+  {
+    "id": "RC-SEC-08",
+    "scenario": "All300 audit events emitted to Info logger",
+    "status": "PASS"
+  },
+  {
+    "id": "RC-SEC-09",
+    "scenario": "Recreated audit UI store empty as documented",
+    "status": "PASS"
+  },
+  {
+    "id": "RC-SEC-10",
+    "scenario": "Unprivileged UFW unavailable handled safely",
+    "status": "PASS"
+  },
+  {
+    "id": "RC-SEC-11",
+    "scenario": "Valid PAM outsider cannot obtain API session",
+    "status": "PASS"
+  }
+]

@@ -1,0 +1,28 @@
+[
+  {
+    "id": "PKG-01",
+    "status": "PASS",
+    "scenario": "Archive and every packaged file verified"
+  },
+  {
+    "id": "PKG-02",
+    "status": "PASS",
+    "scenario": "Complete installer ran successfully in existing Ubuntu container"
+  },
+  {
+    "id": "PKG-03",
+    "status": "PASS",
+    "scenario": "Existing wfadmin credentials preserved",
+    "actual": "In-memory shadow entry comparison equal; no hash/password exported"
+  },
+  {
+    "id": "PKG-04",
+    "status": "PASS",
+    "scenario": "Installed API/UI bytes match tested package"
+  },
+  {
+    "id": "PKG-05",
+    "status": "PASS",
+    "scenario": "UFW configuration unchanged during installation"
+  }
+]

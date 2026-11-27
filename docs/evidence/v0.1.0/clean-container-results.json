@@ -1,0 +1,7 @@
+[
+  {"id":"CLEAN-01","scenario":"Install exact verified CI tarball on fresh ubuntu:24.04","status":"PASS","actual":"Installer exit code 0; dependencies installed; sudoers parsed OK; no SDK/Node installation"},
+  {"id":"CLEAN-02","scenario":"HTTPS health with CA and hostname verification","status":"PASS","actual":"HTTP 200; status ok; version 0.1.0-dev; Cache-Control no-store"},
+  {"id":"CLEAN-03","scenario":"Unexpired protected session on clean install","status":"PASS","actual":"HTTP 200"},
+  {"id":"CLEAN-04","scenario":"Expired protected session on clean install","status":"PASS","actual":"HTTP 401"},
+  {"id":"CLEAN-05","scenario":"UFW unavailable without NET_ADMIN","status":"PASS","actual":"Safe unavailable snapshot with error; no firewall mutation"}
+]

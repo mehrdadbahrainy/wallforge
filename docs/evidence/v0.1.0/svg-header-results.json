@@ -1,0 +1,46 @@
+{
+  "scope": "Post-RC1 SVG/header follow-up; not full release acceptance",
+  "results": [
+    {
+      "scenario": "Production Angular build",
+      "status": "PASS"
+    },
+    {
+      "scenario": "Original and derivative integrity/source/build",
+      "status": "PASS"
+    },
+    {
+      "scenario": "Transparent path-only SVG structure",
+      "status": "PASS"
+    },
+    {
+      "scenario": "Verified HTTPS SVG MIME/delivery",
+      "status": "PASS"
+    },
+    {
+      "scenario": "Desktop public and authenticated header",
+      "status": "PASS"
+    },
+    {
+      "scenario": "Mobile390 public header/sign-in",
+      "status": "PASS"
+    },
+    {
+      "scenario": "Mobile390 authenticated header, body375px",
+      "status": "PASS"
+    },
+    {
+      "scenario": "Narrow320 authenticated header, body305px",
+      "status": "PASS"
+    },
+    {
+      "scenario": "Viewer sign-out",
+      "status": "PASS"
+    },
+    {
+      "scenario": "Fixture cleanup and viewport reset",
+      "status": "PASS"
+    }
+  ],
+  "oldArchiveUnchanged": true
+}

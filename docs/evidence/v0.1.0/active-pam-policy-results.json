@@ -1,0 +1,42 @@
+[
+  {
+    "scenario": "Valid current local Ubuntu PAM account",
+    "status": "PASS",
+    "actual": "PASS Linux integration: valid / admin"
+  },
+  {
+    "scenario": "Locked password denies PAM authentication",
+    "status": "PASS",
+    "actual": "PASS Linux integration: account-disabled / admin"
+  },
+  {
+    "scenario": "Unlock restores valid authentication",
+    "status": "PASS",
+    "actual": "PASS Linux integration: valid / admin"
+  },
+  {
+    "scenario": "Password requiring change fails closed in noninteractive PAM helper",
+    "status": "PASS",
+    "actual": "PASS Linux integration: account-disabled / admin"
+  },
+  {
+    "scenario": "Expired account denies PAM account-management phase",
+    "status": "PASS",
+    "actual": "PASS Linux integration: account-disabled / admin"
+  },
+  {
+    "scenario": "Root rejected",
+    "status": "PASS",
+    "actual": "Native helper denied"
+  },
+  {
+    "scenario": "Zero-length password rejected",
+    "status": "PASS",
+    "actual": "Native helper denied"
+  },
+  {
+    "scenario": "System account rejected",
+    "status": "PASS",
+    "actual": "Native helper denied"
+  }
+]

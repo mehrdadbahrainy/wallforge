@@ -1,0 +1,7 @@
+{
+  "enableExit": 0,
+  "enableStdout": "Firewall is active and enabled on system startup\n",
+  "enableStderr": "",
+  "status": "Status: active\n\n     To                         Action      From\n     --                         ------      ----\n[ 1] 5443/tcp                   ALLOW IN    Anywhere                   # WallForge lab HTTPS\n[ 2] 18080/tcp                  ALLOW IN    Anywhere                   # WallForge lab allow fixture\n[ 3] 18081/tcp                  DENY IN     Anywhere                   # WallForge lab deny fixture\n[ 4] 18082/udp                  REJECT IN   Anywhere                   # WallForge lab reject fixture\n[ 5] 5443/tcp (v6)              ALLOW IN    Anywhere (v6)              # WallForge lab HTTPS\n[ 6] 18080/tcp (v6)             ALLOW IN    Anywhere (v6)              # WallForge lab allow fixture\n[ 7] 18081/tcp (v6)             DENY IN     Anywhere (v6)              # WallForge lab deny fixture\n[ 8] 18082/udp (v6)             REJECT IN   Anywhere (v6)              # WallForge lab reject fixture\n\n",
+  "backup": "/var/lib/wallforge-lab/ufw-before-active"
+}

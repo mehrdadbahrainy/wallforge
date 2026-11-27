@@ -1,0 +1,12 @@
+[
+  {
+    "scenario": "Final minimal active IPv4/IPv6 inventory readable by admin",
+    "status": "PASS",
+    "actual": "Exact2 CLI rules:5443/tcp ALLOW IPv4+IPv6; temporary fixture rules removed"
+  },
+  {
+    "scenario": "Final minimal active IPv4/IPv6 inventory readable by viewer",
+    "status": "PASS",
+    "actual": "Exact2 CLI rules:5443/tcp ALLOW IPv4+IPv6; temporary fixture rules removed"
+  }
+]
