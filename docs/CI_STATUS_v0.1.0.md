@@ -1,24 +1,6 @@
-# WallForge v0.1.0 — CI and review status
+# WallForge CI status
+Package-source commit `72950ccbcd520b75085aadfcbadd3d9ba19af92e`: all4 jobs PASS, run46014480577.
+https://github.com/mehrdadbahrainy/wallforge/actions/runs/46014480577
 
-Observed 2026-11-27. Source branch `feature/v0.1.0-foundation`.
-
-- Application fixes: `f30f48559212117071691012ff06aafee8c73ef5`.
-- Verified follow-up revision: `8a454a41d1dea1def9a441a43912022002f7206b`.
-- [Successful workflow run 60](https://github.com/mehrdadbahrainy/wallforge/actions/runs/45992322959): all four jobs passed — API warning-as-error build/smoke/HTTP denial; Angular npm-ci/state regressions/typecheck/build; Linux PAM/UFW/authenticated HTTPS/cookie-expiry/unavailable-UFW; self-contained Linux preview packaging and artifact upload.
-- Artifact ID `15194916232`, `wallforge-local-preview-linux-x64`; ZIP digest `sha256:e1a7e69ddb06db70795e1d7f060e23dd095c4ae6e9fda3b2bc3dcfbabdcfcd94`. This is a short-lived CI preview artifact, not a GitHub Release.
-- [Earlier run 58](https://github.com/mehrdadbahrainy/wallforge/actions/runs/45992034915) failed only the new expiration probe's public-certificate read permission; follow-up corrected the public CRT to0644. Private key/PFX restrictions were retained.
-- [Existing PR #2](https://github.com/mehrdadbahrainy/wallforge/pull/2) remains draft; no submitted reviews observed. Ready-for-release/review-approved status is not asserted.
-
-Documentation/evidence may be committed after this tested revision; follow the PR's live checks for that final documentation head. Application code remains the verified code above. Final observed head and checks are also recorded in the acceptance summary and SharedSpace copy.
-
-No merge, final version tag, or release publication performed. **Release readiness: NOT READY** until logo, VM/host checks and independent review gates close.
-
-Clean-install verification: the artifact ZIP and tar SHA256 matched; packaged installer and HTTPS/session/unavailable-UFW checks passed in a fresh Ubuntu container. See clean-container-results.json and sanitized install log.
-
-## Final handoff verification
-
-Final branch head: `79bd5e1c63b5bbfd49fcb6919d027f808577bc90`. All four jobs in workflow run64 completed successfully: https://github.com/mehrdadbahrainy/wallforge/actions/runs/45993508927. Git working tree clean. PR#2 remains draft and unmerged; independent review pending. These final metadata updates are synchronized to SharedSpace and local handoff files; the Git evidence snapshot remains at the final head above to avoid changing the already-verified revision. No tag or Release created.
-
-## Security revision CI
-
-`788fa1bc439bb18076af73ef9d1f95f6d056dd8a`: all four jobs passed in https://github.com/mehrdadbahrainy/wallforge/actions/runs/45995765243. New systemd static verification, UTF8/audit contracts and root UFW deadline/cancellation/altered-argument checks passed. VM runtime acceptance remains BLOCKED.
+Final documentation/test-runner head CI: verification pending in this file until observed; final result recorded in FINAL_ACCEPTANCE.fa.md and PR #2 to avoid a self-referential commit loop.
+No independent review approval claimed. VM/runtime/reboot gates BLOCKED. Pre-release prepared, not published or stable.

@@ -1,13 +1,13 @@
-# WallForge v0.1.0 — Candidate release notes (UNRELEASED)
+# WallForge v0.1.0-rc.1 — UNPUBLISHED PRE-RELEASE
 
-This is a review candidate, not a published release. Read-only Ubuntu host console: Angular UI, unprivileged ASP.NET Core API, Linux PAM/group roles, UFW status/rules, users/groups and admin activity. Neither role can modify host state.
+This Linux x64 review candidate is not a stable release. No final tag, merge, or GitHub Release is created by preparing these files.
 
-Candidate fixes: API404 routing, no-store sensitive responses, reliable sign-out feedback and state clearing, fresh CSRF on relogin, strict username boundaries, accessible mobile navigation, installation shell continuation. npm lockfile and CI state/session regression tests added.
+The package contains a self-contained ASP.NET Core API, Angular Production UI, native PAM verifier, exact sudoers/PAM configuration, Docker-only installer, optional unverified systemd unit, installation instructions, license, and build provenance. It includes the original owner-approved horizontal logo, symbol, favicon and icons without redesign or pixel edits.
 
-Validation and known limits: see TEST_REPORT_v0.1.0.md and RELEASE_CHECKLIST_v0.1.0.md. Approved logo/favicon missing, VM installation/systemd/journald/active IPv4/IPv6 UFW and independent security/PR review remain open. Not for public production exposure. No migration from a prior release exists; no version has shipped.
+Capabilities are read-only: PAM login, OS-group Administrator/Viewer authorization, UFW status/rules, local users/groups, and bounded administrator activity. Neither role can mutate firewall or accounts. Sessions expire after20 minutes without sliding renewal; the UI detects expiration on its next API request. The UFW reader has an independent privileged deadline, and only two exact sudo operations are permitted.
 
-Install and rollback: follow docs/INSTALL.en.md or docs/INSTALL.fa.md in the reviewed commit on a disposable VM first. Existing local preview's original binary directory and startup script are preserved; restart with the saved original script to roll back the preview. No firewall/account mutations need rollback because this version only reads host state. Temporary test identities were removed.
+Upgrade API and sudoers together. The Docker installer preserves an existing wfadmin account/password; new installations prompt for a throwaway password. Preserve matching prior binaries/startup/policy for rollback. No migration from a stable release exists because no stable version has shipped.
 
-Do not create final v0.1.0 tag, merge main, or publish until explicit owner approval and all release gates pass.
+Test outcomes and exact artifact SHA256 are delivered separately in TEST_REPORT_v0.1.0.md and SHA256SUMS.txt. systemd runtime, real reboot/key continuity, durable journald, VM-specific PAM policy and active IPv4/IPv6 UFW acceptance remain BLOCKED when unsupported by Docker. Independent security/PR approval is outstanding. Production TLS acceptance and unavailable browser platforms are not asserted. Use only an isolated trusted management environment, not a public production server.
 
-Security stabilization: bounded privileged UFW reader via exact GNU timeout, rejected UTF8 password-buffer cleanup, service umask/core/journal/kernel hardening, new deadline/cancellation/audit contract tests. API and sudoers must be upgraded together; restore the paired prior policy and startup script to roll back a local preview. Real20-minute Chrome expiry/relogin and six Edge scenarios passed; VM runtime/durability and original logo remain BLOCKED.
+Current executed checks:87 automated/package PASS,13 Chrome UI PASS. See test report for blocked and historical scope.

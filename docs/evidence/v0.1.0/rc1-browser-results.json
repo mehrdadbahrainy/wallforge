@@ -1,0 +1,93 @@
+[
+  {
+    "id": "UI-RC-01",
+    "scenario": "Approved wordmark/header/login assets",
+    "status": "PASS",
+    "actual": "Desktop images loaded 1330x520; alt text; no placeholder",
+    "browser": "Managed Chrome, HTTPS installed RC1"
+  },
+  {
+    "id": "UI-RC-02",
+    "scenario": "Invalid password",
+    "status": "PASS",
+    "actual": "Error shown; password cleared",
+    "browser": "Managed Chrome, HTTPS installed RC1"
+  },
+  {
+    "id": "UI-RC-03",
+    "scenario": "Admin login",
+    "status": "PASS",
+    "actual": "Overview/admin role/RC version",
+    "browser": "Managed Chrome, HTTPS installed RC1"
+  },
+  {
+    "id": "UI-RC-04",
+    "scenario": "Firewall inventory",
+    "status": "PASS",
+    "actual": "Inactive empty state",
+    "browser": "Managed Chrome, HTTPS installed RC1"
+  },
+  {
+    "id": "UI-RC-05",
+    "scenario": "Users inventory",
+    "status": "PASS",
+    "actual": "Users/groups rendered",
+    "browser": "Managed Chrome, HTTPS installed RC1"
+  },
+  {
+    "id": "UI-RC-06",
+    "scenario": "Admin activity",
+    "status": "PASS",
+    "actual": "Recent events and memory-only limitation visible",
+    "browser": "Managed Chrome, HTTPS installed RC1"
+  },
+  {
+    "id": "UI-RC-07",
+    "scenario": "Admin logout",
+    "status": "PASS",
+    "actual": "Returned to login",
+    "browser": "Managed Chrome, HTTPS installed RC1"
+  },
+  {
+    "id": "UI-RC-08",
+    "scenario": "Viewer role",
+    "status": "PASS",
+    "actual": "Inventory available; Activity absent",
+    "browser": "Managed Chrome, HTTPS installed RC1"
+  },
+  {
+    "id": "UI-RC-09",
+    "scenario": "Mobile overview",
+    "status": "PASS",
+    "actual": "Viewport390; body375; logo164px",
+    "browser": "Managed Chrome, HTTPS installed RC1"
+  },
+  {
+    "id": "UI-RC-10",
+    "scenario": "Mobile tables",
+    "status": "PASS",
+    "actual": "293px containers; internal scrolling552/337px; no body overflow",
+    "browser": "Managed Chrome, HTTPS installed RC1"
+  },
+  {
+    "id": "UI-RC-11",
+    "scenario": "Live role revocation",
+    "status": "PASS",
+    "actual": "Refresh cleared host data and returned to login",
+    "browser": "Managed Chrome, HTTPS installed RC1"
+  },
+  {
+    "id": "UI-RC-12",
+    "scenario": "Mobile login",
+    "status": "PASS",
+    "actual": "Wordmark257px; error layout within viewport",
+    "browser": "Managed Chrome, HTTPS installed RC1"
+  },
+  {
+    "id": "UI-RC-13",
+    "scenario": "Recovery without reload",
+    "status": "PASS",
+    "actual": "Role restored; same-page login and final logout succeeded",
+    "browser": "Managed Chrome, HTTPS installed RC1"
+  }
+]

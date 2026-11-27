@@ -26,3 +26,6 @@ Do not redraw or replace the approved logo. Obtain the exact ZIP attachment from
 
 ## Release constraints
 The previously passing Docker and CI checks do not replace VM-based acceptance. No host firewall mutations are permitted as part of v0.1.0.
+
+## Observed RC1 status (2026-11-27)
+Items1–3,5–7 completed. Item4: desktop/mobile aspect ratio, existing UI contrast/white backing and alt text verified; served ICO/PNG hashes match approved assets. Separate theme-switch and exhaustive16px visual review not claimed. Item8 BLOCKED (no approved VM); item9 independent review pending; item10 stable release not approved/published. Exact package source and evidence in TEST_REPORT_v0.1.0.md.

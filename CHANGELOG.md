@@ -8,6 +8,13 @@ This project follows [Semantic Versioning](https://semver.org/) and a versioned 
 
 ## [Unreleased]
 
+### v0.1.0-rc.1 preparation
+- Integrated the original approved wordmark/favicon and app icons without redesign.
+- Built and installed a checksummed self-contained Linux x64 Docker preview package;87 automated/package checks and13 Chrome UI scenarios passed.
+- Preserve existing administrator credentials on reinstall; make E2E runners wait for verified HTTPS and fail on failed result rows.
+- Pre-release only; independent security review and real VM/systemd/reboot acceptance remain open. No release published.
+
+
 ### Added
 - Angular 22 initial read-only management UI with login, firewall, accounts, and audit views (development branch).
 - ASP.NET Core .NET 10 API with PAM authentication, Linux group-based roles, CSRF-protected sessions, login rate limiting, and read-only UFW/users endpoints.

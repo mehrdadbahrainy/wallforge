@@ -1,0 +1,218 @@
+[
+  {
+    "id": "LIN-01",
+    "scenario": "Linux PAM/group harness: admin/read-ufw",
+    "status": "PASS",
+    "actual": "PASS read-only UFW status: inactive\nPASS Linux integration: read-ufw / admin"
+  },
+  {
+    "id": "LIN-02",
+    "scenario": "Linux PAM/group harness: viewer/valid",
+    "status": "PASS",
+    "actual": "PASS Linux integration: valid / viewer"
+  },
+  {
+    "id": "LIN-03",
+    "scenario": "Linux PAM/group harness: admin/invalid-password",
+    "status": "PASS",
+    "actual": "PASS Linux integration: invalid-password / admin"
+  },
+  {
+    "id": "LIN-04",
+    "scenario": "Linux PAM/group harness: none/valid",
+    "status": "PASS",
+    "actual": "PASS Linux integration: valid / none"
+  },
+  {
+    "id": "LIN-05",
+    "scenario": "Expired PAM account denied",
+    "status": "PASS",
+    "actual": "PASS Linux integration: account-disabled / admin"
+  },
+  {
+    "id": "SEC-01",
+    "scenario": "Arbitrary sudo command denied",
+    "status": "PASS",
+    "actual": "exit=1"
+  },
+  {
+    "id": "API-01",
+    "scenario": "HTTPS health with certificate validation",
+    "status": "PASS",
+    "actual": "200: {\"status\":\"ok\",\"version\":\"0.1.0-rc.1\"}"
+  },
+  {
+    "id": "API-02-me",
+    "scenario": "Unauthenticated /api/auth/me",
+    "status": "PASS",
+    "actual": "401"
+  },
+  {
+    "id": "API-02-users",
+    "scenario": "Unauthenticated /api/host/users",
+    "status": "PASS",
+    "actual": "401"
+  },
+  {
+    "id": "API-02-firewall",
+    "scenario": "Unauthenticated /api/host/firewall",
+    "status": "PASS",
+    "actual": "401"
+  },
+  {
+    "id": "API-02-audit",
+    "scenario": "Unauthenticated /api/audit",
+    "status": "PASS",
+    "actual": "401"
+  },
+  {
+    "id": "SEC-02",
+    "scenario": "Login without CSRF rejected",
+    "status": "PASS",
+    "actual": "400"
+  },
+  {
+    "id": "AUTH-01",
+    "scenario": "Invalid password rejected without secret details",
+    "status": "PASS",
+    "actual": "401"
+  },
+  {
+    "id": "AUTH-02",
+    "scenario": "Root input rejected",
+    "status": "PASS",
+    "actual": "400"
+  },
+  {
+    "id": "AUTH-03",
+    "scenario": "PAM admin login",
+    "status": "PASS",
+    "actual": "200"
+  },
+  {
+    "id": "SEC-03",
+    "scenario": "Secure HttpOnly Strict session cookie",
+    "status": "PASS",
+    "actual": "Required flags present"
+  },
+  {
+    "id": "API-03-users",
+    "scenario": "Admin read /api/host/users",
+    "status": "PASS",
+    "actual": "200; cache-control=no-store"
+  },
+  {
+    "id": "SEC-09-users",
+    "scenario": "Sensitive response forbids caching",
+    "status": "PASS",
+    "actual": "no-store"
+  },
+  {
+    "id": "API-04",
+    "scenario": "Inventory includes fixture users/groups",
+    "status": "PASS",
+    "actual": "Fixture identities present"
+  },
+  {
+    "id": "API-03-firewall",
+    "scenario": "Admin read /api/host/firewall",
+    "status": "PASS",
+    "actual": "200; cache-control=no-store"
+  },
+  {
+    "id": "SEC-09-firewall",
+    "scenario": "Sensitive response forbids caching",
+    "status": "PASS",
+    "actual": "no-store"
+  },
+  {
+    "id": "UFW-01",
+    "scenario": "UFW inactive status and no rules",
+    "status": "PASS",
+    "actual": "{\"available\":true,\"status\":\"inactive\",\"rules\":[],\"error\":null}"
+  },
+  {
+    "id": "API-03-audit",
+    "scenario": "Admin read /api/audit",
+    "status": "PASS",
+    "actual": "200; cache-control=no-store"
+  },
+  {
+    "id": "SEC-09-audit",
+    "scenario": "Sensitive response forbids caching",
+    "status": "PASS",
+    "actual": "no-store"
+  },
+  {
+    "id": "SEC-04",
+    "scenario": "Firewall mutation endpoint denied",
+    "status": "PASS",
+    "actual": "405"
+  },
+  {
+    "id": "SEC-05",
+    "scenario": "Anonymous token invalid after login",
+    "status": "PASS",
+    "actual": "400"
+  },
+  {
+    "id": "SEC-06",
+    "scenario": "Cross-origin logout rejected",
+    "status": "PASS",
+    "actual": "400"
+  },
+  {
+    "id": "AUTH-04",
+    "scenario": "Live group removal revokes session",
+    "status": "PASS",
+    "actual": "401"
+  },
+  {
+    "id": "AUTH-05",
+    "scenario": "PAM viewer login",
+    "status": "PASS",
+    "actual": "200"
+  },
+  {
+    "id": "SEC-07",
+    "scenario": "Viewer audit forbidden",
+    "status": "PASS",
+    "actual": "403"
+  },
+  {
+    "id": "AUTH-06",
+    "scenario": "Viewer inventory allowed",
+    "status": "PASS",
+    "actual": "200"
+  },
+  {
+    "id": "AUTH-07",
+    "scenario": "Logout completes",
+    "status": "PASS",
+    "actual": "204"
+  },
+  {
+    "id": "AUTH-08",
+    "scenario": "Logged-out session denied",
+    "status": "PASS",
+    "actual": "401"
+  },
+  {
+    "id": "SEC-08",
+    "scenario": "Login rate limiter reaches 429",
+    "status": "PASS",
+    "actual": "429,429,429,429,429,429"
+  },
+  {
+    "id": "API-05",
+    "scenario": "Unknown API endpoint returns 404",
+    "status": "PASS",
+    "actual": "404"
+  },
+  {
+    "id": "UFW-02",
+    "scenario": "UFW configuration unchanged",
+    "status": "PASS",
+    "actual": "Before/after /etc/ufw SHA256 equal"
+  }
+]

@@ -1,5 +1,5 @@
 """Disposable WallForge container only. Never prints credentials or cookies."""
-import hashlib, http.cookiejar, json, os, secrets, ssl, subprocess, urllib.request, urllib.error
+import hashlib, http.cookiejar, json, os, secrets, ssl, subprocess, time, urllib.request, urllib.error
 
 results = []
 def check(test_id, scenario, condition, actual):
@@ -20,6 +20,16 @@ def ufw_hash():
 
 ctx = ssl.create_default_context(cafile='/opt/wallforge/tls/localhost.crt')
 base = os.environ.get('WF_BASE', 'https://localhost:5443')
+
+# A detached container launch returns before Kestrel is listening. Wait for verified HTTPS.
+for attempt in range(40):
+    try:
+        with urllib.request.urlopen(base+'/api/health', context=ctx, timeout=2) as health:
+            if health.status==200: break
+    except (urllib.error.URLError, TimeoutError): pass
+    time.sleep(.25)
+else: raise RuntimeError('WallForge HTTPS health did not become ready')
+
 def client():
     jar = http.cookiejar.CookieJar()
     return urllib.request.build_opener(urllib.request.HTTPSHandler(context=ctx), urllib.request.HTTPCookieProcessor(jar)), jar
@@ -124,3 +134,5 @@ finally:
     check('UFW-02','UFW configuration unchanged',before==ufw_hash(),'Before/after /etc/ufw SHA256 equal' if before==ufw_hash() else 'Configuration changed')
     with open('/tmp/wallforge-validation-results.json','w') as f: json.dump(results,f,indent=2)
 print('SUMMARY '+json.dumps({s:sum(x['status']==s for x in results) for s in ['PASS','FAIL']}))
+
+if any(r["status"] != "PASS" for r in results): raise SystemExit(1)

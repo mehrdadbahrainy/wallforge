@@ -1,0 +1,8 @@
+[
+  {
+    "id": "RC-SEC-11",
+    "scenario": "Valid PAM credentials without authorized group cannot create API session",
+    "status": "PASS",
+    "actual": "PAM accepted; role none; HTTP401"
+  }
+]

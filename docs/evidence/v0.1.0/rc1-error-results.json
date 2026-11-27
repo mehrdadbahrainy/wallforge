@@ -1,0 +1,62 @@
+[
+  {
+    "id": "INPUT-01",
+    "scenario": "Reject invalid or unauthorized username",
+    "status": "PASS",
+    "actual": "400"
+  },
+  {
+    "id": "INPUT-02",
+    "scenario": "Reject invalid or unauthorized username",
+    "status": "PASS",
+    "actual": "400"
+  },
+  {
+    "id": "INPUT-03",
+    "scenario": "Reject invalid or unauthorized username",
+    "status": "PASS",
+    "actual": "400"
+  },
+  {
+    "id": "INPUT-04",
+    "scenario": "Reject invalid or unauthorized username",
+    "status": "PASS",
+    "actual": "401"
+  },
+  {
+    "id": "INPUT-05",
+    "scenario": "Malformed JSON returns 400 without stack trace",
+    "status": "PASS",
+    "actual": "400"
+  },
+  {
+    "id": "PAM-PROTO-1",
+    "scenario": "Malformed helper protocol fails closed",
+    "status": "PASS",
+    "actual": "Denied"
+  },
+  {
+    "id": "PAM-PROTO-2",
+    "scenario": "Malformed helper protocol fails closed",
+    "status": "PASS",
+    "actual": "Denied"
+  },
+  {
+    "id": "PAM-PROTO-3",
+    "scenario": "Malformed helper protocol fails closed",
+    "status": "PASS",
+    "actual": "Denied"
+  },
+  {
+    "id": "PAM-PROTO-4",
+    "scenario": "Malformed helper protocol fails closed",
+    "status": "PASS",
+    "actual": "Denied"
+  },
+  {
+    "id": "PAM-PROTO-5",
+    "scenario": "Malformed helper protocol fails closed",
+    "status": "PASS",
+    "actual": "Denied"
+  }
+]

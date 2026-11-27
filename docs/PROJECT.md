@@ -1,28 +1,12 @@
-# WallForge — Project brief
-Updated: 2026-11-27 | Status: v0.1.0 validation completed within available local scope; **NOT READY for release**.
+# WallForge — project brief
+Updated2026-11-27. v0.1.0-rc.1 PRE-RELEASE PREPARED, unpublished; stable release blocked.
 
-## Current milestone
-Secure read-only Ubuntu foundation: Angular/TypeScript, unprivileged ASP.NET Core API, PAM authentication, wallforge-admin/viewer groups, UFW and local-account inventory, bounded admin audit. Firewall/account writes, Safe Apply and rollback are future milestones, outside v0.1.0.
+Read-only Ubuntu foundation: Angular UI, unprivileged ASP.NET Core API, native PAM verifier, admin/viewer OS groups, UFW/users inventory and bounded recent activity. Writes/Safe Apply remain future scope.
 
-## Verified work
-Development branch feature/v0.1.0-foundation. Application fix f30f48559212117071691012ff06aafee8c73ef5, CI fixture follow-up 8a454a41d1dea1def9a441a43912022002f7206b. 78 local checks passed (73 automated +5 clean-container installation acceptance checks) plus13 documented Chrome scenarios; builds/typecheck passed. All four CI jobs passed for8a454a4, and its checksummed artifact installed successfully in a fresh Docker container. Follow CI_STATUS_v0.1.0.md for final documentation-head CI. Existing draft PR: https://github.com/mehrdadbahrainy/wallforge/pull/2 (review approval pending).
+Approved original branding integrated. Production Linux x64 package built from `72950ccbcd520b75085aadfcbadd3d9ba19af92e` and installed in existing isolated Docker lab. 87 automated/package checks and13 current Chrome UI scenarios passed. Package-source CI all4 jobs passed. See TEST_REPORT_v0.1.0.md, CI_STATUS_v0.1.0.md, RELEASE_CHECKLIST_v0.1.0.md and SHA256SUMS.txt for exact evidence.
 
-## Remaining release gates / next actions
-1. Owner supplies approved Forge Shield Emblem from earlier ChatGPT conversation; no redesign/substitute authorized. Integrate logo/favicon and retest.
-2. Disposable real Ubuntu24.04 VM: clean install, startup/reboot, PAM policies, systemd/journald and key continuity; Docker is insufficient.
-3. Active IPv4/IPv6 UFW visibility, additional browsers and timed idle-expiration test.
-4. Independent PAM/sudoers/hardening and PR review; reconcile final CI and release checklist.
-5. Obtain explicit approval before merge, final tag or GitHub Release. Nothing published.
-
-## Validation documents
-TEST_REPORT_v0.1.0.md — environment, commit IDs, scenario matrix, evidence, limitations.
-ISSUES_v0.1.0.md — reproductions, causes, fixes, status.
-RELEASE_CHECKLIST_v0.1.0.md — remaining acceptance/publishing gates.
-RELEASE_NOTES_v0.1.0.md — unpublished candidate notes.
-CI_STATUS_v0.1.0.md — final observed CI and review state.
-
-## Historical status
-2026-11-24 report: 5/15 acceptance criteria complete; initial builds/integration reported successful. Previous logo selection is confirmed historically, but its asset is absent. Earlier reports are not substituted for live evidence.
+Remaining: independent security/PR review, approved real Ubuntu VM acceptance, additional current browsers and explicit stable publishing approval. No approved disposable VM. Docker PID1=docker-init; systemd runtime, service restart, real reboot/key continuity, durable journald, full PAM policy acceptance and active IPv4/IPv6 UFW inventory are BLOCKED. No WSL/VM/host firewall changes were made.
+PR https://github.com/mehrdadbahrainy/wallforge/pull/2 remains draft; no main merge/tag/release.
 
 ## Existing management sheet
 https://docs.google.com/spreadsheets/d/1_dZtqxKAew9Jp87qDNp6bEAyCWZuDMVp6X0W7aCjt_w/edit
@@ -42,3 +26,7 @@ Security revision788fa1bc439bb18076af73ef9d1f95f6d056dd8a passes all four CI job
 Timed20-minute Chrome idle expiration, subsequent relogin without reload and logout are now PASS. Available browser coverage: Chrome158.0.8127.37 and Edge158.0.4370.45; other browser platforms untested. Eleven incremental security checks passed; original78-check evidence retained historically. Owner-confirmed VM blocks, logo and independent review still prevent release.
 
 The paired security API/sudoers update is live in the existing Docker preview; HTTPS health, exact UFW read, core0/0, private0600 output log and fixture cleanup passed targeted deployment checks. This does not close any VM-dependent gate.
+
+## Final stabilization handoff
+
+Exact final head: `41c6751e4cd04da0322644a5bc88eaa2d59ab4fc` on feature/v0.1.0-foundation. All four jobs in run68 completed successfully: https://github.com/mehrdadbahrainy/wallforge/actions/runs/46007731035. Working tree clean. PR#2 remains draft, unmerged and without submitted review. Final head metadata is synchronized in SharedSpace/local handoff files after the Git evidence snapshot; no additional code change or release action. VM-dependent acceptance and original branding remain BLOCKED; release readiness NOT READY.
