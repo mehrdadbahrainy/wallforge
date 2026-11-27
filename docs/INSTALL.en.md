@@ -58,7 +58,7 @@ sudo visudo -cf /etc/sudoers.d/wallforge
 ```
 
 The API never receives arbitrary shell/command arguments from clients. Its PAM verifier is exactly `/usr/bin/sudo -n /usr/local/libexec/wallforge-pam-auth` and receives credentials through a length-prefixed private stdin protocol, never argv. Its UFW inspection command is exactly:
-`/usr/bin/sudo -n /usr/sbin/ufw status numbered`.
+`/usr/bin/sudo -n /usr/bin/timeout --signal=TERM --kill-after=1s 6s /usr/sbin/ufw status numbered`.
 
 > PAM authentication is delegated to a narrowly scoped, root-owned native verifier. The API remains unprivileged. PAM configuration must still be tested using actual local Ubuntu accounts before calling this release ready. Do not weaken `/etc/shadow` permissions.
 

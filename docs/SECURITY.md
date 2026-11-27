@@ -8,7 +8,7 @@
 2. ASP.NET Core API: dedicated unprivileged Linux identity `wallforge-api`. Calls a narrowly scoped native PAM verifier over a fixed, argument-exact sudo rule. Only emits HTTP-only session cookies (no JWT/localStorage credentials).
 3. Native root-owned verifier `/usr/local/libexec/wallforge-pam-auth` uses `libpam` and the PAM service `/etc/pam.d/wallforge`. Credentials are length-prefixed on stdin (not shell args). Only one hidden password prompt is implemented in this phase. PAM account-management checks are made after successful password verification.
 4. Account and role inventory: only `/etc/passwd` and `/etc/group` local entries (not LDAP/NSS beyond those files). Users must have UID >= 1000 and be explicitly in `wallforge-admin` or `wallforge-viewer`; root is denied.
-5. UFW inspector: another fixed, no-shell subprocess `sudo -n /usr/sbin/ufw status numbered`, controlled by exact argument-matched sudoers policy. The role cannot run any other sudo command. The command accepts no browser-provided arguments.
+5. UFW inspector: another fixed, no-shell subprocess `sudo -n /usr/bin/timeout --signal=TERM --kill-after=1s 6s /usr/sbin/ufw status numbered`, controlled by exact argument-matched sudoers policy. The role cannot run any other sudo command. The command accepts no browser-provided arguments.
 6. Journald: receives structured audit event names/actors, not passwords. Bounded UI audit buffer is ephemeral.
 
 ## Authentication/session invariants
@@ -47,3 +47,11 @@
 - [ ] Independent security review and release signoff completed
 
 Vulnerability reports: please open a private security advisory rather than a public exploit issue.
+
+## Stabilization review (2026-11-27)
+
+The exact UFW sudo rule now includes root-owned GNU timeout (TERM at6s, KILL after1s), so a hung privileged reader is bounded even after client cancellation or API exit. Upgrade the root-owned sudoers file together with the API; the previous direct-UFW rule must be removed. No wildcard or extra timeout command is allowed. The PAM verifier still has an independent10-second alarm and bounded protocol; no change to the PAM trust boundary was made.
+
+The service disables core dumps, uses umask0077, explicitly routes stdout/stderr to journal, and protects kernel configuration/modules/logs/control groups. NoNewPrivileges remains false because the two exact sudo operations require elevation. These unit settings require real-VM runtime acceptance; static verification alone does not establish PAM/UFW compatibility under systemd.
+
+The UI audit queue is intentionally memory-only. Journal persistence is a host policy: ensure persistent storage/retention and inspect records after restart and reboot on a disposable VM. Application log output alone does not prove journal durability. No host journald configuration is changed by the application.

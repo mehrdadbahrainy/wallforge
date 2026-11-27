@@ -45,11 +45,11 @@ public sealed class PamAuthenticator
 
         var nameBytes = Encoding.UTF8.GetBytes(username);
         var passwordBytes = Encoding.UTF8.GetBytes(password);
-        if (nameBytes.Length > 32 || passwordBytes.Length > MaximumPasswordBytes) return false;
 
         byte[]? payload = null;
         try
         {
+            if (nameBytes.Length > 32 || passwordBytes.Length > MaximumPasswordBytes) return false;
             payload = new byte[4 + nameBytes.Length + passwordBytes.Length];
             BinaryPrimitives.WriteUInt16BigEndian(payload.AsSpan(0, 2), (ushort)nameBytes.Length);
             BinaryPrimitives.WriteUInt16BigEndian(payload.AsSpan(2, 2), (ushort)passwordBytes.Length);

@@ -2,4 +2,5 @@
 # Both binaries must be root-owned and must not be writable by wallforge-api.
 # No glob/wildcards, shells, arbitrary commands, or user-controlled arguments.
 wallforge-api ALL=(root) NOPASSWD: /usr/local/libexec/wallforge-pam-auth ""
-wallforge-api ALL=(root) NOPASSWD: /usr/sbin/ufw status numbered
+wallforge-api ALL=(root) NOPASSWD: /usr/bin/timeout --signal=TERM --kill-after=1s 6s /usr/sbin/ufw status numbered
+# Root-owned timeout bounds UFW even if the API exits or cannot signal its privileged child.

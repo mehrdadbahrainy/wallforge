@@ -11,7 +11,7 @@ WallForge is an early-stage, open-source web application for **safe Ubuntu firew
 
 - **Frontend:** Angular + TypeScript
 - **API:** ASP.NET Core (unprivileged service)
-- **Host read boundary (v0.1):** unprivileged API invokes two fixed, argument-exact root operations: a tiny native PAM verifier and read-only `sudo -n /usr/sbin/ufw status numbered`; a dedicated privileged host agent is planned for safe writes later
+- **Host read boundary (v0.1):** unprivileged API invokes two fixed, argument-exact root operations: a tiny native PAM verifier and read-only `sudo -n /usr/bin/timeout --signal=TERM --kill-after=1s 6s /usr/sbin/ufw status numbered`; a dedicated privileged host agent is planned for safe writes later
 - **Firewall:** UFW initially; nftables backend planned after v1.0
 - **Authentication:** Linux PAM, with independent authorization via `wallforge-admin` and `wallforge-viewer` OS groups
 - **Deployment:** single Ubuntu host at first, trusted HTTPS management network only

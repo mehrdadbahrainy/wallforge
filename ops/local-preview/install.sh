@@ -34,6 +34,8 @@ chmod 0644 /opt/wallforge/tls/localhost.crt
 cat >/opt/wallforge/start.sh <<'START'
 #!/usr/bin/env bash
 set -euo pipefail
+umask 077
+ulimit -c 0
 cd /opt/wallforge/api
 exec runuser -u wallforge-api -- env ASPNETCORE_URLS=https://0.0.0.0:5443 ASPNETCORE_ENVIRONMENT=Production ASPNETCORE_Kestrel__Certificates__Default__Path=/opt/wallforge/tls/localhost.crt ASPNETCORE_Kestrel__Certificates__Default__KeyPath=/opt/wallforge/tls/localhost.key WALLFORGE_KEYS_DIR=/var/lib/wallforge/keys /opt/wallforge/api/WallForge.Api
 START

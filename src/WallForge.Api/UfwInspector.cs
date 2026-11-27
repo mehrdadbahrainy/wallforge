@@ -24,6 +24,12 @@ public sealed class UfwInspector
                 }
             };
             process.StartInfo.ArgumentList.Add("-n");
+            // Enforce the deadline inside the privileged process tree, not only in .NET.
+            // These exact arguments must match the root-owned sudoers policy.
+            process.StartInfo.ArgumentList.Add("/usr/bin/timeout");
+            process.StartInfo.ArgumentList.Add("--signal=TERM");
+            process.StartInfo.ArgumentList.Add("--kill-after=1s");
+            process.StartInfo.ArgumentList.Add("6s");
             process.StartInfo.ArgumentList.Add("/usr/sbin/ufw");
             process.StartInfo.ArgumentList.Add("status");
             process.StartInfo.ArgumentList.Add("numbered");
