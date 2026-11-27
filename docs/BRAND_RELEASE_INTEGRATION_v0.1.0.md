@@ -3,7 +3,7 @@
 The project owner approved the flat navy/orange shield, firewall-brick and flame WallForge logo on 2026-11-27.
 
 ## Approved source assets
-The approved logo package is available as the ChatGPT conversation attachment `wallforge-brand-v0.1.0.zip`. It contains:
+The approved logo package has been uploaded to the project Google Drive folder: https://drive.google.com/file/d/1kaqqxgb_VlTOnnrNe3GP0fzs0efJvVzO/view (`SharedSpace/WallForge/wallforge-brand-v0.1.0.zip`). It contains:
 - `wallforge-horizontal.png` — login/header wordmark
 - `wallforge-symbol.png` — standalone shield
 - `favicon.ico`
