@@ -1,0 +1,21 @@
+[
+  {
+    "id": "UFW-ACT-01",
+    "scenario": "Published localhost HTTPS allowed with active UFW",
+    "status": "PASS",
+    "actual": "CA and hostname verified; HTTP200"
+  },
+  {
+    "id": "UFW-ACT-02",
+    "scenario": "Container UFW deny blocks real published IPv4 ingress",
+    "status": "FAIL",
+    "actual": "Unexpected HTTP200",
+    "counters": "Chain ufw-user-input (1 references)\n    pkts      bytes target     prot opt in     out     source               destination         \n       2      120 ACCEPT     6    --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:5443\n       0        0 ACCEPT     6    --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:18080\n       0        0 DROP       6    --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:18081\n       0        0 REJECT     17   --  *      *       0.0.0.0/0            0.0.0.0/0            udp dpt:18082 reject-with icmp-port-unreachable\n"
+  },
+  {
+    "id": "UFW-ACT-03",
+    "scenario": "Remove temporary deny and restore HTTPS access/policy",
+    "status": "PASS",
+    "actual": "HTTP200; original8 rule inventory unchanged"
+  }
+]

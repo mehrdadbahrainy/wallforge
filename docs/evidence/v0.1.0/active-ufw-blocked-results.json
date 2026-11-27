@@ -1,0 +1,32 @@
+[
+  {
+    "scenario": "Systemd runtime/service restart",
+    "status": "BLOCKED",
+    "actual": "PID1 docker-init; no systemd runtime"
+  },
+  {
+    "scenario": "Actual reboot and boot key/firewall/journal continuity",
+    "status": "BLOCKED",
+    "actual": "Docker process reload is not a real boot; no approved VM"
+  },
+  {
+    "scenario": "Durable journald",
+    "status": "BLOCKED",
+    "actual": "journal runtime unavailable; private file retention only"
+  },
+  {
+    "scenario": "External IPv6 packet enforcement",
+    "status": "BLOCKED",
+    "actual": "Bridge EnableIPv6=false; eth0 disable_ipv6=1; only IPv6 loopback exists"
+  },
+  {
+    "scenario": "Fresh active-UFW browser visual acceptance",
+    "status": "BLOCKED",
+    "actual": "CUA failed initialization twice after reset: local kernel assets path unavailable"
+  },
+  {
+    "scenario": "Independent security/PR review",
+    "status": "BLOCKED",
+    "actual": "Agent validation is not independent review"
+  }
+]

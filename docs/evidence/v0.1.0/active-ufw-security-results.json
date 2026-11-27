@@ -1,0 +1,38 @@
+[
+  {
+    "scenario": "Privileged TERM-resistant UFW hang bounded; child terminated",
+    "status": "PASS"
+  },
+  {
+    "scenario": "Cancelled UFW request leaves no privileged child beyond deadline",
+    "status": "PASS"
+  },
+  {
+    "scenario": "Altered timeout sudo arguments denied",
+    "status": "PASS"
+  },
+  {
+    "scenario": "Oversized UTF8 password rejected before helper",
+    "status": "PASS"
+  },
+  {
+    "scenario": "Newest250 audit events retained in reverse order",
+    "status": "PASS"
+  },
+  {
+    "scenario": "All300 audit fixture events reach Info logger",
+    "status": "PASS"
+  },
+  {
+    "scenario": "Recreated audit store resets explicitly",
+    "status": "PASS"
+  },
+  {
+    "scenario": "Unexpired protected session accepted HTTP200",
+    "status": "PASS"
+  },
+  {
+    "scenario": "Expired protected session denied HTTP401",
+    "status": "PASS"
+  }
+]

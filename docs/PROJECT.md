@@ -1,3 +1,7 @@
+# Current Docker validation milestone — 2026-11-27
+UFW ACTIVE in existing Ubuntu Docker lab.83 final active-lab checks PASS: actual IPv4 filtering, active IPv4/IPv6 inventories, PAM policies, roles/API/security, UFW reload and API process restart/session/audit behavior. Final2 rules allow only5443/tcp for IPv4/IPv6; localhost-only Docker mapping unchanged. No host firewall/WSL/VM changes.
+External IPv6 traffic, systemd/reboot/journald and fresh active-UFW visual browser acceptance remain BLOCKED; independent review pending. Prior RC1 archive remains immutable and lacks later SVG UI. Current status PRE-RELEASE ONLY. See current test report/checklist; earlier snapshot below is historical.
+
 # WallForge — project brief
 Updated2026-11-27. v0.1.0-rc.1 PRE-RELEASE PREPARED, unpublished; stable release blocked.
 

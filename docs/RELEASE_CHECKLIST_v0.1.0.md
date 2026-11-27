@@ -1,3 +1,23 @@
+# Current active-UFW acceptance checklist — 2026-11-27
+UFW is ACTIVE in the existing isolated Docker container;83 final active-lab assertions PASS. Full evidence, initial harness failures and exact scope: TEST_REPORT_v0.1.0.md and active-*-results.json.
+
+- [x] Existing capabilities/network preserved; no WSL/VM/host firewall changes.
+- [x] Active IPv4 and IPv6 kernel rule inventory matches Admin/Viewer API (8 fixture rules; final2 HTTPS-only rules).
+- [x] Actual IPv4 ingress allow/deny/restoration tested; temporary rules/users cleaned.
+- [x] Current Ubuntu PAM lock/unlock, expired account/password-change-required, root/system/empty rejection tested.
+- [x] API/CSRF/roles/session/error/security regressions repeated under active UFW.
+- [x] UFW reload and real API process restart preserve expected inventory/key/cookie/CSRF behavior.
+- [x] Recent audit reset and private console-file retention verified; no journal durability claim.
+- [ ] BLOCKED: external IPv6 traffic (bridgeIPv4-only, eth0IPv6 disabled).
+- [ ] BLOCKED: systemd runtime, real reboot/boot persistence and durable journald (no approved VM).
+- [ ] BLOCKED: fresh visual browser acceptance for active UFW (CUA initialization failure); prior SVG UI tests historical.
+- [ ] Independent security/PR approval pending.
+- [ ] New verified candidate archive incorporating SVG UI required; old RC1 archive immutable.
+- [ ] Stable merge/tag/publication not performed.
+The enable command's startup flag does not prove Docker startup or real-boot execution. Read-only API has no firewall mutations.
+
+---
+## Earlier evidence (historical; superseded where the active-UFW scope above differs)
 # WallForge v0.1.0-rc.1 — release checklist
 Updated2026-11-27. **PRE-RELEASE PREPARED / UNPUBLISHED / NOT STABLE.**
 Package source `72950ccbcd520b75085aadfcbadd3d9ba19af92e`; exact artifact/hash in test report and SHA256SUMS.txt.

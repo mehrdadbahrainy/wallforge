@@ -1,3 +1,6 @@
+# Active-UFW test/evidence follow-up
+New source tests cover explicit active inventory comparison and Docker-only PAM policies. Final CI for this evidence/test-only head is recorded after push in SharedSpace final handoff and PR #2. Prior application CI below is historical, not a new execution.
+
 # SVG/header follow-up CI
 The subsequent transparent SVG/responsive header change has a new development head. Its configured CI is verified in PR #2 and the SharedSpace final handoff after push. Earlier package-source CI below remains historical and is not relabeled as coverage of the new UI.
 

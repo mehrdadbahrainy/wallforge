@@ -51,6 +51,11 @@ password = secrets.token_hex(24)
 users = ['wf-val-admin', 'wf-val-viewer', 'wf-val-outsider']
 created = []
 before = ufw_hash()
+expected_ufw_status = os.environ.get('WF_EXPECT_UFW_STATUS', 'inactive')
+assert expected_ufw_status in ('inactive', 'active')
+cli = cmd(['ufw', 'status', 'numbered'])
+assert cli.returncode == 0
+expected_ufw_rules = [line.strip() for line in cli.stdout.splitlines() if line.strip().startswith('[')]
 try:
     for user, group in zip(users, ['wallforge-admin', 'wallforge-viewer', None]):
         assert cmd(['id', user]).returncode != 0, 'Fixture already exists; refusing to alter it'
@@ -99,7 +104,11 @@ try:
             snapshot=json.loads(body)
             check('API-04','Inventory includes fixture users/groups',all(u in [x['userName'] for x in snapshot['users']] for u in users) and any(g['name']=='wallforge-admin' for g in snapshot['groups']),'Fixture identities present')
         if path.endswith('firewall'):
-            check('UFW-01','UFW inactive status and no rules',json.loads(body).get('status')=='inactive' and json.loads(body).get('rules')==[],body)
+            snapshot=json.loads(body)
+            check('UFW-01','UFW state and inventory match explicit fixture/CLI',snapshot.get('available') is True and snapshot.get('status')==expected_ufw_status and snapshot.get('rules')==expected_ufw_rules,body)
+            if expected_ufw_status == 'active':
+                check('UFW-ACT-API-01','Active IPv4 numbered rules match CLI',any('(v6)' not in rule for rule in snapshot['rules']),'Actual active IPv4 rules present; exact complete inventory matched above')
+                check('UFW-ACT-API-02','Active IPv6 numbered rules match CLI',any('(v6)' in rule for rule in snapshot['rules']),'Actual active IPv6 rules present; external IPv6 traffic is a separate test')
     status,_,_=request(admin,'/api/host/firewall',{},method='POST')
     check('SEC-04','Firewall mutation endpoint denied',status==405,str(status))
     status,_,_=request(admin,'/api/auth/logout',{},old_token)
@@ -118,6 +127,10 @@ try:
     check('SEC-07','Viewer audit forbidden',status==403,str(status))
     status,_,_=request(viewer,'/api/host/users')
     check('AUTH-06','Viewer inventory allowed',status==200,str(status))
+    if expected_ufw_status == 'active':
+        status,body,_=request(viewer,'/api/host/firewall')
+        snapshot=json.loads(body)
+        check('UFW-ACT-API-03','Viewer can read complete active IPv4/IPv6 inventory',status==200 and snapshot.get('status')=='active' and snapshot.get('rules')==expected_ufw_rules,'HTTP'+str(status)+'; exact CLI inventory comparison')
     token=csrf(viewer)
     status,_,_=request(viewer,'/api/auth/logout',{},token)
     check('AUTH-07','Logout completes',status==204,str(status))

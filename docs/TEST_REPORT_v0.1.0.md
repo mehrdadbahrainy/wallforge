@@ -1,3 +1,47 @@
+# Active UFW Docker acceptance — 2026-11-27
+**UFW enabled successfully in the existing Ubuntu container. PRE-RELEASE ONLY; stable gates remain open.**
+
+Environment: wallforge-local-lab-ubuntu-1, Ubuntu24.04.5, existing NET_ADMIN, nonprivileged separate Docker network namespace, localhost-only127.0.0.1:5443 mapping. No added capabilities, WSL/VM or host-firewall changes. API binary remains package source72950cc; live SVG/header source9946b5d. New commits below add lab tests/evidence, not application behavior.
+
+## Final executed results
+**83 active-lab assertions PASS, zero remaining FAIL in final executed cases.** This is a new scoped Docker run, separate from earlier87 package checks/13 UI scenarios. Initial harness failures and unexecuted tests are not counted as passes.
+
+| Group | PASS | Evidence |
+|---|---:|---|
+| PAM/roles/API/CSRF/cookies/revocation/active UFW inventory |39|active-ufw-api-results.json|
+| Malformed API/native helper input |10|active-ufw-error-results.json|
+| Current PAM account/password policies |8|active-pam-policy-results.json|
+| Actual published IPv4 ingress allow/deny/restoration |3|active-ufw-ingress-results.json|
+| Root timeout/cancellation/argument boundary, PAM UTF8, audit and session expiry |9|active-ufw-security-results.json|
+| UFW reload/API process restart/key+cookie/CSRF/audit behavior |12|active-process-restart-results.json|
+| Final minimal policy Admin/Viewer exact inventory |2|active-ufw-final-results.json|
+
+## UFW enabled and tested
+ufw --force enable returned0. Actual kernel IPv4/IPv6 UFW chains and numbered rules were inspected through root CLI and the API's exact sudo timeout command. Four temporary rules per family (ALLOW5443, ALLOW18080, DENY18081, REJECT18082UDP) yielded8 active numbered entries, exactly matching Admin and Viewer API inventory. Actual published IPv4 HTTPS returned200; replacing the HTTPS allow with a verified kernel deny blocked a new connection, and restoring the original allow restored200. UFW reload retained all8 rules.
+
+Temporary18080/18081/18082 rules were removed. **Final policy remains ACTIVE, default deny incoming/allow outgoing/deny routed, with only5443/tcp ALLOW for IPv4 and IPv6 (2 numbered rules).** Both Admin and Viewer returned that exact final CLI inventory. Test users removed. No extra Docker ports were published. Original inactive UFW configuration and kernel rules are backed up root-private in /var/lib/wallforge-lab/ufw-before-active; rollback is available, not performed because the owner requested active UFW.
+
+The enable command's 'enabled on system startup' text is a configuration flag, not proof that Docker's sleep/docker-init starts UFW on a future container restart. No systemd or real-boot pass is claimed.
+
+## PAM/session/audit details
+Current Ubuntu PAM accepted a valid authorized account, denied a locked password, accepted after unlock, denied password-change-required and expired accounts; native protocol rejected root/system users and zero-length passwords. No common-auth/common-account policy was changed. This does not certify every possible production PAM configuration, MFA or a faillock policy that is not installed.
+Actual controlled API process restart retained the service-owned keys and an existing authenticated cookie. A pre-restart authenticated CSRF token still permitted logout, after which the cookie returned401. UFW remained active and readable. Recent audit became empty as documented, while the root0600 local console file retained the earlier event. This is process/file retention, not durable journald or reboot evidence. Expired/unexpired protected tickets were also retested (401/200); historical real20-minute browser evidence remains historical.
+
+## Initial harness failures retained
+1. First ingress probe got HTTP200 because UFW skipped inserting a conflicting same-port rule; no kernel deny was installed. Corrected the fixture to remove its owned allow temporarily, assert actual kernel DROP installation, then probe and restore. Corrected run3/3 passed. Initial result remains active-ufw-ingress-initial-results.json.
+2. First Windows-host restart fixture used text stdin, converting LF to CRLF for chpasswd and setting a different throwaway password than intended. API correctly returned401. Switched Docker stdin to bytes and added direct PAM/admin preflight; corrected run12/12 passed. Initial results remain active-process-restart-initial-results.json. No product authentication fix was needed.
+
+## Still BLOCKED / unverified
+- Systemd runtime, actual service restart under systemd, real reboot/boot key+firewall continuity and durable journald: no approved VM, PID1docker-init, journal runtime absent.
+- **Active IPv6 rule inventory is PASS**, but external IPv6 packet enforcement remains BLOCKED: existing Docker network is IPv4-only and eth0 IPv6 disabled. The network/sysctl/host was not changed to manufacture this result.
+- Current active-UFW browser visual check BLOCKED by unavailable CUA initialization (kernel-assets path error persisted after reset). No fresh visual pass claimed. Earlier SVG/header desktop/mobile UI results remain historical; API inventories were fully verified here.
+- Independent security/PR approval remains pending and cannot be supplied by these agent tests.
+- Earlier RC1 archive is immutable and lacks subsequent SVG UI; a later verified candidate package is needed before distribution. No merge/tag/Release was performed.
+
+Final CI/head metadata is recorded in SharedSpace final handoff and PR #2 after this committed evidence snapshot.
+
+---
+## Earlier evidence (historical; superseded where the active-UFW scope above differs)
 # WallForge v0.1.0-rc.1 — current release-readiness report
 Updated 2026-11-27. **Prepared PRE-RELEASE; NOT STABLE; NOT PUBLISHED.**
 
