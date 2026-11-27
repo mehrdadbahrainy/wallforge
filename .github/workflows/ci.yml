@@ -100,3 +100,43 @@ jobs:
           sudo usermod --expiredate -1 wf-ci-admin
           dotnet publish src/WallForge.Api/WallForge.Api.csproj -c Release -o /tmp/wallforge-api
           bash tests/e2e/auth-session.sh
+
+  local-preview-bundle:
+    name: Build disposable Docker preview bundle (Linux x64)
+    runs-on: ubuntu-24.04
+    needs: [api, angular, linux-integration]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Build self-contained API and Angular UI
+        run: |
+          dotnet publish src/WallForge.Api/WallForge.Api.csproj -c Release -r linux-x64 --self-contained true -o preview/api
+          (cd frontend && npm install --no-audit --no-fund && npm run build)
+          mkdir -p preview/api/wwwroot
+          cp -a frontend/dist/wallforge/browser/. preview/api/wwwroot/
+      - name: Package restricted helper and local installer
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq gcc libpam0g-dev
+          gcc -O2 -Wall -Wextra -Werror -fstack-protector-strong -D_FORTIFY_SOURCE=3 -o preview/wallforge-pam-auth src/WallForge.PamHelper/wallforge-pam-auth.c -lpam
+          cp ops/pam.d/wallforge preview/pam-wallforge
+          cp ops/sudoers.d/wallforge preview/sudoers-wallforge
+          cp ops/local-preview/install.sh preview/install.sh
+          bash -n preview/install.sh
+          test -x preview/api/WallForge.Api
+          test -f preview/api/wwwroot/index.html
+          tar -czf wallforge-local-preview-linux-x64.tar.gz -C preview .
+          sha256sum wallforge-local-preview-linux-x64.tar.gz > SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wallforge-local-preview-linux-x64
+          path: |
+            wallforge-local-preview-linux-x64.tar.gz
+            SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 7
