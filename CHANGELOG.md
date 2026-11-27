@@ -8,6 +8,11 @@ This project follows [Semantic Versioning](https://semver.org/) and a versioned 
 
 ## [Unreleased]
 
+### Post-RC1 UI update
+- Added transparent path-only SVG derivatives of the approved logo, including a light variant for dark surfaces.
+- Removed white logo backing and the slogan beneath the logo; redesigned responsive header identity, read-only status and user controls.
+- Existing RC1 archive remains unchanged; this UI follow-up requires a later package build.
+
 ### v0.1.0-rc.1 preparation
 - Integrated the original approved wordmark/favicon and app icons without redesign.
 - Built and installed a checksummed self-contained Linux x64 Docker preview package;87 automated/package checks and13 Chrome UI scenarios passed.

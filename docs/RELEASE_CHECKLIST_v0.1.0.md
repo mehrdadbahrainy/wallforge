@@ -16,3 +16,10 @@ Package source `72950ccbcd520b75085aadfcbadd3d9ba19af92e`; exact artifact/hash i
 - [ ] Stable release approval / main merge / tag / GitHub Release (not authorized, not performed).
 
 No approved disposable VM. Docker PID1=docker-init; systemd runtime, service restart, real reboot/key continuity, durable journald, full PAM policy acceptance and active IPv4/IPv6 UFW inventory are BLOCKED. No WSL/VM/host firewall changes were made.
+
+## Post-RC1 transparent SVG and header update — 2026-11-27
+At the owner's request, replaced header/login PNG references with transparent path-only SVG derivatives traced from the original approved artwork. Flat-color tracing simplifies raster texture; it is not an original artist-supplied vector. A light ink variant preserves contrast on dark surfaces. Original PNG/ICO hashes remain unchanged. Removed the opaque CSS backing and the slogan beneath the logo; redesigned header brand/context, read-only indicator, user identity/role and sign-out alignment.
+
+Targeted validation PASS: Production Angular build208.81kB, original/derivative source/build integrity, SVG path-only structure, actual verified HTTPS image/svg+xml delivery, desktop sign-in and authenticated Viewer header, mobile390px public/authenticated layout, narrow320px authenticated layout, and sign-out. No horizontal overflow in checked layouts (body390/375/305px for viewport390/390/320). Temporary viewer removed; viewport reset. Backend, session and PAM behavior were not changed or rerun wholesale. Prior87-check and13-scenario acceptance applies to the earlier packaged RC1, not a fresh full acceptance of this UI follow-up.
+
+Live Docker wwwroot updated only; earlier UI retained at /opt/wallforge/api/wwwroot.before-svg-header. Existing RC1 tarball/SHA remains immutable and contains the prior PNG header. It must be rebuilt as a later candidate before these new UI changes can be distributed in a release archive. Independent security/VM/stable-release gates remain unchanged; no main merge/tag/Release.

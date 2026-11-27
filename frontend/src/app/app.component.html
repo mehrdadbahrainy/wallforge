@@ -1,15 +1,27 @@
 <div class="app-shell">
-  <header class="topbar"><div class="brand"><img class="brand-logo" src="/brand/wallforge-horizontal.png" alt="WallForge" width="164" height="64"><small>Safe. Simple. Open.</small></div>
-  @if (session(); as user) {
-    <div class="account"><span class="role">{{ user.role }}</span><span>{{ user.userName }}</span>
-      <button type="button" class="button ghost" (click)="logout()">Sign out</button></div>
-  }
+  <header class="topbar" [class.authenticated]="!!session()">
+    <div class="header-brand">
+      <img class="brand-logo" src="/brand/wallforge-horizontal-light.svg" alt="WallForge" width="182" height="71">
+      <span class="header-context">Host console</span>
+    </div>
+    <div class="header-controls">
+      <span class="environment"><span class="status-dot" aria-hidden="true"></span>Read-only</span>
+      @if (session(); as user) {
+        <div class="account">
+          <span class="account-avatar" aria-hidden="true">{{ user.userName.slice(0, 1).toUpperCase() }}</span>
+          <div class="account-details"><strong class="account-name" [title]="user.userName">{{ user.userName }}</strong><span class="account-role">{{ user.role === 'admin' ? 'Administrator' : 'Viewer' }}</span></div>
+          <button type="button" class="button ghost sign-out" (click)="logout()">Sign out</button>
+        </div>
+      } @else {
+        <span class="header-session-note">Ubuntu account access</span>
+      }
+    </div>
   </header>
   @if (loading()) { <main class="center"><p>Loading WallForge…</p></main> }
   @else if (!session()) {
     <main class="center">
       <form class="login" (ngSubmit)="login()">
-        <img class="login-logo" src="/brand/wallforge-horizontal.png" alt="WallForge" width="1330" height="520"><h1>Secure sign in</h1>
+        <img class="login-logo" src="/brand/wallforge-horizontal-light.svg" alt="WallForge" width="1330" height="520"><h1>Secure sign in</h1>
         <p class="muted">Use your Ubuntu account. WallForge access requires an authorized Linux group.</p>
         <label for="loginName">Ubuntu username</label>
         <input id="loginName" name="username" autocomplete="username" required [ngModel]="loginName()" (ngModelChange)="loginName.set($event)">
