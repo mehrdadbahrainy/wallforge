@@ -13,6 +13,8 @@ printf '%s:%s\n' wf-ci-viewer "$password" | sudo chpasswd
 
 openssl req -x509 -nodes -newkey rsa:2048 -days 1 -keyout /tmp/wallforge-ci.key \
   -out /tmp/wallforge-ci.crt -subj '/CN=localhost' >/dev/null 2>&1
+# Public certificate only: the unprivileged expiry probe must be able to read it.
+chmod 0644 /tmp/wallforge-ci.crt
 openssl pkcs12 -export -out /tmp/wallforge-ci.pfx -inkey /tmp/wallforge-ci.key \
   -in /tmp/wallforge-ci.crt -passout pass:wallforge-ci >/dev/null 2>&1
 sudo chown wallforge-api:wallforge-api /tmp/wallforge-ci.pfx
