@@ -3,6 +3,7 @@
   "version": "0.1.0-dev",
   "private": true,
   "scripts": {
+    "test": "node component-state.test.mjs",
     "start": "ng serve --host 127.0.0.1 --port 4200",
     "build": "ng build --configuration production",
     "typecheck": "tsc -p tsconfig.app.json --noEmit"

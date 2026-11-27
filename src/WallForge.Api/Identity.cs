@@ -9,8 +9,8 @@ namespace WallForge.Api;
 
 public static class LinuxUserNames
 {
-    private static readonly Regex Pattern = new(@"^[a-z_][a-z0-9_-]{0,31}\$?$", RegexOptions.Compiled | RegexOptions.CultureInvariant);
-    public static bool IsValid(string? name) => name is not null && name != "root" && Pattern.IsMatch(name);
+    private static readonly Regex Pattern = new(@"^[a-z_][a-z0-9_-]{0,31}\$?\z", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+    public static bool IsValid(string? name) => name is not null && name.Length <= 32 && name != "root" && Pattern.IsMatch(name);
 }
 
 public static class CsrfGuard

@@ -70,6 +70,13 @@ builder.Services.AddRateLimiter(options =>
 });
 var app = builder.Build();
 app.UseForwardedHeaders();
+// Host inventory and authentication responses must not survive in browser/proxy caches.
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.StartsWithSegments("/api"))
+        context.Response.Headers.CacheControl = "no-store";
+    await next(context);
+});
 app.UseExceptionHandler(handler =>
 {
     handler.Run(async context =>
@@ -167,6 +174,8 @@ session.MapGet("/audit", (HttpContext context, AuditStore audit) =>
     return Results.Ok(audit.Recent());
 });
 
+// Keep unknown API routes out of the Angular SPA fallback.
+app.MapGet("/api/{**path}", () => Results.NotFound(new { error = "API endpoint not found." }));
 app.MapFallbackToFile("index.html");
 app.Run();
 

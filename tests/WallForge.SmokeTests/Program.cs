@@ -12,6 +12,9 @@ Verify(LinuxUserNames.IsValid("admin-user"), "regular username accepted");
 Verify(LocalAccountStore.ParseUser("alex:x:1001:1001:Alex:/home/alex:/bin/bash")?.UserName == "alex", "parse local passwd entry");
 Verify(LocalAccountStore.ParseUser("bad:x:notnum:1001::/:/bin/sh") is null, "reject invalid UID");
 Verify(LocalAccountStore.ParseGroup("wallforge-admin:x:1988:alex")?.Members.SequenceEqual(["alex"]) == true, "parse local group entry");
+Verify(LinuxUserNames.IsValid(new string('a', 31) + "$"), "32-byte machine username accepted");
+Verify(!LinuxUserNames.IsValid(new string('a', 32) + "$"), "33-byte machine username rejected consistently with PAM helper");
+Verify(!LinuxUserNames.IsValid("alex\n"), "username with trailing newline rejected");
 var temp = Path.Combine(Path.GetTempPath(), "wf-test-" + Guid.NewGuid().ToString("N"));
 Directory.CreateDirectory(temp);
 try

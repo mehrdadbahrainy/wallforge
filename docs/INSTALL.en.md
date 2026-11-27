@@ -49,7 +49,7 @@ Build the minimal **native root-owned PAM verifier** and create the dedicated **
 ```bash
 sudo useradd --system --home-dir /var/lib/wallforge --shell /usr/sbin/nologin wallforge-api
 sudo apt-get install -y gcc libpam0g-dev
-gcc -O2 -Wall -Wextra -Werror -fstack-protector-strong -D_FORTIFY_SOURCE=3 \\
+gcc -O2 -Wall -Wextra -Werror -fstack-protector-strong -D_FORTIFY_SOURCE=3 \
   -o /tmp/wallforge-pam-auth src/WallForge.PamHelper/wallforge-pam-auth.c -lpam
 sudo mkdir -p /usr/local/libexec
 sudo install -o root -g root -m 0755 /tmp/wallforge-pam-auth /usr/local/libexec/wallforge-pam-auth

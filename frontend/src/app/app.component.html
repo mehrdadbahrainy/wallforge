@@ -23,11 +23,11 @@
   } @else {
     <div class="workspace">
       <nav class="sidebar" aria-label="Main navigation">
-        <button [class.selected]="currentView()==='overview'" (click)="go('overview')">▣ <span>Overview</span></button>
-        <button [class.selected]="currentView()==='firewall'" (click)="go('firewall')">⛨ <span>Firewall</span></button>
-        <button [class.selected]="currentView()==='users'" (click)="go('users')">♙ <span>Local users</span></button>
+        <button aria-label="Overview" [attr.aria-current]="currentView()==='overview' ? 'page' : null" [class.selected]="currentView()==='overview'" (click)="go('overview')">▣ <span>Overview</span></button>
+        <button aria-label="Firewall" [attr.aria-current]="currentView()==='firewall' ? 'page' : null" [class.selected]="currentView()==='firewall'" (click)="go('firewall')">⛨ <span>Firewall</span></button>
+        <button aria-label="Local users" [attr.aria-current]="currentView()==='users' ? 'page' : null" [class.selected]="currentView()==='users'" (click)="go('users')">♙ <span>Local users</span></button>
         @if (session()?.role === 'admin') {
-          <button [class.selected]="currentView()==='activity'" (click)="go('activity')">☷ <span>Activity</span></button>
+          <button aria-label="Activity" [attr.aria-current]="currentView()==='activity' ? 'page' : null" [class.selected]="currentView()==='activity'" (click)="go('activity')">☷ <span>Activity</span></button>
         }
         <p class="nav-note">v0.1.0 — read-only</p>
       </nav>

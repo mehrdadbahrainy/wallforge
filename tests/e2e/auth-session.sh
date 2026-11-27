@@ -66,6 +66,8 @@ test "$(http_code "$base/api/host/firewall")" = "401"
 test "$(http_code "$base/api/auth/csrf")" = "200"
 test "$(http_code -X POST "$base/api/auth/login" -H 'Content-Type: application/json' \
   --data '{"userName":"wf-ci-admin","password":"wrong"}')" = "400"
+test "$(http_code "$base/api/does-not-exist")" = "404"
+echo "PASS unknown API routes return 404"
 echo "PASS anonymous endpoints require session and CSRF"
 
 csrf="$(csrf_token "$admin_jar")"
@@ -80,6 +82,12 @@ test "$(http_code -b "$admin_jar" "$base/api/audit")" = "200"
 test "$(http_code -b "$admin_jar" "$base/api/host/users")" = "200"
 test "$(http_code -b "$admin_jar" "$base/api/host/firewall")" = "200"
 test "$(http_code -b "$admin_jar" -X POST "$base/api/host/firewall")" = "405"
+for endpoint in host/users host/firewall audit; do
+  curl -fsSk -D - -o /dev/null -b "$admin_jar" "$base/api/$endpoint" | grep -iq '^cache-control: no-store'
+done
+test "$(http_code -b "$admin_jar" -X POST "$base/api/auth/logout" \
+  -H "X-WallForge-CSRF: $csrf" -H 'Content-Type: application/json' --data '{}')" = "400"
+echo "PASS sensitive responses are not cached and pre-login CSRF is rejected"
 echo "PASS admin HTTPS authentication and read-only host views; mutations blocked"
 
 sudo gpasswd -d wf-ci-admin wallforge-admin >/dev/null
@@ -101,3 +109,7 @@ test "$(http_code -b "$viewer_jar" -c "$viewer_jar" -X POST "$base/api/auth/logo
 test "$(http_code -b "$viewer_jar" "$base/api/auth/me")" = "401"
 echo "PASS viewer role, identity-bound CSRF refresh, and logout"
 
+
+sudo -u wallforge-api /usr/bin/dotnet /tmp/wallforge-integration/WallForge.LinuxIntegration.dll \
+  --session-expiry "$base" /tmp/wallforge-ci-keys /tmp/wallforge-ci.crt wf-ci-admin
+sudo -u nobody /usr/bin/dotnet /tmp/wallforge-integration/WallForge.LinuxIntegration.dll --ufw-unavailable

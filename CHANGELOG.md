@@ -22,16 +22,22 @@ This project follows [Semantic Versioning](https://semver.org/) and a versioned 
 - None.
 
 ### Fixed
-- None.
+- Unknown API GET paths return JSON 404 instead of Angular HTML with 200.
+- Failed sign-out retains the session and displays an error; expiration clears host data and permits a fresh login.
+- Mobile navigation keeps descriptive accessible labels when visible text is hidden.
+- Username validation matches the PAM helper's 32-byte boundary and rejects trailing newlines.
+- Correct shell continuation in both Ubuntu installation guides.
 
 ### Security
+- All API responses use `Cache-Control: no-store`; added cookie expiration, CSRF and frontend session regression tests.
 - Reworked PAM authentication to use a narrowly scoped, root-owned native verifier (after direct non-root PAM authentication failed on Ubuntu CI). Implemented role revocation checks, HTTPS-only session cookies and antiforgery protection in source. **PAM/UFW and HTTPS session behavior passed on a GitHub-hosted Ubuntu 24.04 runner.** Independent security review, real browser E2E and manual installation/upgrade verification are still pending. Safe Apply/host-side rollback remains planned for v0.2.0.
 
 ### Breaking
 - None.
 
 ### Known issues
-- Automated builds, Ubuntu PAM/UFW and authenticated HTTPS API integration tests pass in CI. No tagged installer or verified application release is available. Browser UI and manual deployment acceptance tests are pending.
+- Approved Forge Shield Emblem asset is unavailable; logo and favicon replacement block release.
+- Local Chrome UI and Docker Ubuntu validation are documented in `docs/TEST_REPORT_v0.1.0.md`. Real Ubuntu VM installation, active IPv4/IPv6 UFW, systemd/journald and additional browser coverage remain pending. No tagged release exists.
 - No production security audit or system-level recovery test has been performed.
 
 ---

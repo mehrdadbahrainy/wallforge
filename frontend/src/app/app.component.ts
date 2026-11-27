@@ -55,10 +55,13 @@ export class AppComponent implements OnInit {
     }
   }
   async login(): Promise<void> {
-    if (this.busy() || !this.csrf) return;
+    if (this.busy()) return;
     this.busy.set(true);
     this.error.set('');
     try {
+      // Recover after expiration/revocation or a transient startup token failure.
+      if (!this.csrf) await this.ensureCsrf();
+      if (!this.csrf) return;
       const user = await firstValueFrom(this.http.post<Session>('/api/auth/login',
         { userName: this.loginName(), password: this.loginPassword() },
         { headers: { 'X-WallForge-CSRF': this.csrf }, withCredentials: true }));
@@ -78,9 +81,14 @@ export class AppComponent implements OnInit {
     try {
       await firstValueFrom(this.http.post('/api/auth/logout', {},
         { headers: { 'X-WallForge-CSRF': this.csrf }, withCredentials: true }));
-    } catch { /* session may have expired, still clear local state */ }
-    this.session.set(null); this.inventory.set(null); this.firewall.set(null);
-    this.events.set([]); this.currentView.set('overview');
+    } catch (e) {
+      // A failed request can leave the server session valid. Do not claim sign-out.
+      if (!(e instanceof HttpErrorResponse) || e.status !== 401) {
+        this.error.set('Sign out could not be confirmed. Please try again.');
+        return;
+      }
+    }
+    this.clearSession();
     await this.ensureCsrf();
   }
   async refresh(): Promise<void> {
@@ -99,9 +107,13 @@ export class AppComponent implements OnInit {
       this.error.set('');
     } catch (e) {
       if (e instanceof HttpErrorResponse && e.status === 401) {
-        this.session.set(null); this.error.set('Your session has expired or access was revoked.');
+        this.clearSession(); this.error.set('Your session has expired or access was revoked.');
       } else this.error.set('Some host information could not be loaded.');
     } finally { this.busy.set(false); }
+  }
+  private clearSession(): void {
+    this.session.set(null); this.inventory.set(null); this.firewall.set(null);
+    this.events.set([]); this.currentView.set('overview'); this.csrf = '';
   }
   go(view: View): void { this.currentView.set(view); }
 }

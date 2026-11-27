@@ -45,7 +45,10 @@ jobs:
           node-version: '24'
       - name: Install frontend dependencies
         working-directory: frontend
-        run: npm install --no-audit --no-fund
+        run: npm ci --no-audit --no-fund
+      - name: Component session regressions
+        working-directory: frontend
+        run: npm test
       - name: Typecheck
         working-directory: frontend
         run: npm run typecheck
@@ -116,7 +119,7 @@ jobs:
       - name: Build self-contained API and Angular UI
         run: |
           dotnet publish src/WallForge.Api/WallForge.Api.csproj -c Release -r linux-x64 --self-contained true -o preview/api
-          (cd frontend && npm install --no-audit --no-fund && npm run build)
+          (cd frontend && npm ci --no-audit --no-fund && npm run build)
           mkdir -p preview/api/wwwroot
           cp -a frontend/dist/wallforge/browser/. preview/api/wwwroot/
       - name: Package restricted helper and local installer
